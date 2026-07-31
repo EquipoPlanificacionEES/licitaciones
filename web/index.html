@@ -210,6 +210,16 @@ h1 .no-ia{color:var(--muted);text-decoration:line-through;text-decoration-thickn
   font-size:15px;font-weight:400;color:var(--muted);
   max-width:52ch;margin:20px 0 0;letter-spacing:0;line-height:1.6;
 }
+.statement .valores{
+  display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;
+}
+.statement .valores span{
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:12px;letter-spacing:.05em;
+  padding:6px 12px;border-radius:3px;
+  border:1px solid var(--azul-borde);
+  color:var(--azul);background:var(--azul-suave);
+}
 
 /* ---------- secciones ---------- */
 section{padding:88px 0}
@@ -472,10 +482,15 @@ footer{padding:44px 0;border-top:1px solid var(--linea)}
   <div class="wrap rev">
     <p>El conocimiento de tu empresa hoy solo trabaja <b>cuando alguien está disponible</b>.</p>
     <p class="nota">
-      Está atrapado en documentos, planillas y en la cabeza de tu gente. Cada
-      llamada perdida, cotización sin seguimiento o licitación no detectada es
-      conocimiento que existía y no actuó. DOOIF lo pone a trabajar.
+      Está atrapado en documentos, imágenes, contratos y en la cabeza de tu
+      gente — y se pierde cuando alguien cambia de cargo o deja la
+      organización. Cada llamada perdida, cotización sin seguimiento o
+      licitación no detectada es conocimiento que existía y no actuó.
+      DOOIF lo pone a trabajar.
     </p>
+    <div class="valores" aria-label="qué vendemos">
+      <span>Productividad</span><span>Continuidad operacional</span><span>Preservación del conocimiento</span><span>Reducción de costos</span><span>Trazabilidad</span><span>Mejores decisiones</span>
+    </div>
   </div>
 </div>
 
@@ -504,7 +519,7 @@ footer{padding:44px 0;border-top:1px solid var(--linea)}
           responden y actúan con el contexto real de tu negocio.
         </p>
         <div class="items">
-          <span>ingesta</span><span>embeddings</span><span>base vectorial</span><span>RAG</span>
+          <span>gestión documental</span><span>OCR</span><span>imágenes</span><span>ingesta</span><span>embeddings</span><span>base vectorial</span><span>RAG</span>
         </div>
       </div>
       <div class="capa-flecha" aria-hidden="true">↓ ↑</div>
@@ -535,7 +550,7 @@ footer{padding:44px 0;border-top:1px solid var(--linea)}
           uso, marca blanca por empresa y administración central.
         </p>
         <div class="items">
-          <span>multi-tenant</span><span>RBAC</span><span>planes</span><span>white-label</span><span>métricas</span>
+          <span>multi-tenant</span><span>RBAC</span><span>planes</span><span>white-label</span><span>auditoría</span><span>workflow</span><span>firma electrónica</span><span>dashboards</span><span>integraciones</span>
         </div>
       </div>
     </div>
@@ -626,22 +641,47 @@ footer{padding:44px 0;border-top:1px solid var(--linea)}
 
         <article class="sol rev">
           <div class="sol-top">
-            <h3>Agente Contactos</h3>
+            <h3>Contactabilidad</h3>
             <span class="pill ok">ACTIVO</span>
           </div>
           <p class="que">
-            Gestión de contactos y trámites: el agente llama, confirma datos,
-            resuelve la gestión y la cierra en tu sistema con el respaldo
-            completo de la conversación.
+            Plataforma de contacto masivo y gestiones: campañas de marcado
+            automático, confirmación de datos y cierre de trámites, con el
+            respaldo completo de cada conversación.
           </p>
           <ul>
             <li>Campañas de marcado automático continuo</li>
             <li>Confirmación y captura de datos en la llamada</li>
             <li>Cierre de gestiones con transcripción y análisis</li>
+            <li>Reporte estructurado al sistema de origen</li>
           </ul>
           <div class="usa">
             <span class="usa-label">Motores del Core</span>
             <span class="m">voz</span><span class="m">seguimiento</span><span class="m">contactos</span>
+          </div>
+        </article>
+
+        <article class="sol rev">
+          <div class="sol-top">
+            <h3>Atención Ciudadana</h3>
+            <span class="pill fase">MUNICIPIOS</span>
+            <span class="pill obra">EN DESARROLLO</span>
+          </div>
+          <p class="que">
+            Contactabilidad para municipios: un agente que atiende a los
+            vecinos las 24 horas, responde con la información oficial del
+            municipio y deja cada caso registrado y derivado a quien
+            corresponde.
+          </p>
+          <ul>
+            <li>Atención 24/7 por teléfono, WhatsApp y chat web</li>
+            <li>Trámites y ordenanzas respondidos con RAG oficial</li>
+            <li>Derivación al departamento correcto con registro del caso</li>
+            <li>Campañas salientes: avisos, operativos, encuestas, recordatorios</li>
+          </ul>
+          <div class="usa">
+            <span class="usa-label">Motores del Core</span>
+            <span class="m">voz</span><span class="m">chat web</span><span class="m">conocimiento·RAG</span><span class="m">contactos</span><span class="m">seguimiento</span>
           </div>
         </article>
 
@@ -678,8 +718,8 @@ footer{padding:44px 0;border-top:1px solid var(--linea)}
       <p class="eyebrow">Catálogo del Core</p>
       <h2>Los motores, una sola vez</h2>
       <p>
-        Cada motor se construyó para un proyecto real y quedó en la plataforma.
-        Componerlos es cómo nace cada nueva solución.
+        Cada motor se construye una vez, para un proyecto real, y queda en la
+        plataforma. Componerlos es cómo nace cada nueva solución.
       </p>
     </div>
     <div class="motor-grid rev">
@@ -693,6 +733,8 @@ footer{padding:44px 0;border-top:1px solid var(--linea)}
       <div class="motor"><span class="mid mono">M·08</span><h4>Chat web</h4><p>Chat embebible con un link para pegar en WhatsApp, Instagram o tu sitio.</p></div>
       <div class="motor"><span class="mid mono">M·09</span><h4>Generador de agentes</h4><p>Crea la ficha completa de un agente nuevo con IA en segundos, lista para simular.</p></div>
       <div class="motor"><span class="mid mono">M·10</span><h4>Plataforma SaaS</h4><p>Multi-tenant, roles, planes con límites, códigos de activación y marca blanca.</p></div>
+      <div class="motor"><span class="mid mono">M·11</span><h4>Documental · OCR</h4><p>Gestión documental, OCR avanzado y procesamiento de imágenes que alimentan el conocimiento.</p></div>
+      <div class="motor"><span class="mid mono">M·12</span><h4>Workflow · Firma</h4><p>Flujos de aprobación, firma electrónica y auditoría con trazabilidad completa.</p></div>
     </div>
   </div>
 </section>
