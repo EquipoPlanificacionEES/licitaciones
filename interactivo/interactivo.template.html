@@ -1,0 +1,785 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DOOIF — El Cubo</title>
+<style>
+@font-face{
+  font-family:'Archivo';font-style:normal;font-weight:100 900;font-display:swap;
+  src:url(data:font/woff2;base64,@@FONT@@) format('woff2');
+}
+:root{
+  --fondo:#060B18;--panel:#0B1226;--panel2:#101A38;
+  --tinta:#E9EFFC;--cuerpo:#BAC7E1;--muted:#8FA0C2;
+  --linea:rgba(142,163,214,.16);--linea-f:rgba(142,163,214,.32);
+  --cian:#22D3EE;--azul:#3B6CF6;--azulv:#5B85FF;--violeta:#A78BFA;
+  --ok:#34D399;--alerta:#FBBF24;--rojo:#F87171;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+body{
+  margin:0;background:var(--fondo);color:var(--tinta);
+  font-family:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+.mono{font-family:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace}
+a{color:var(--azulv)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--cian);outline-offset:3px;border-radius:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+.btn{
+  display:inline-block;border:0;cursor:pointer;
+  background:var(--azul);color:#fff;text-decoration:none;
+  font-family:inherit;font-weight:700;font-size:15px;letter-spacing:.02em;
+  padding:13px 26px;border-radius:5px;
+  transition:background .15s ease, box-shadow .15s ease, transform .1s ease;
+}
+.btn:hover{background:#2B57DE;box-shadow:0 0 26px rgba(59,108,246,.5)}
+.btn:active{transform:translateY(1px)}
+.btn-linea{background:transparent;color:var(--tinta);border:1px solid var(--linea-f)}
+.btn-linea:hover{background:rgba(59,108,246,.12);box-shadow:none}
+
+.eyebrow{
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--cian);margin:0 0 16px;font-weight:600;
+}
+h2{
+  font-size:clamp(26px,4vw,38px);font-weight:800;font-stretch:93%;
+  letter-spacing:-.015em;line-height:1.1;margin:0 0 14px;text-wrap:balance;
+}
+.sub{color:var(--muted);font-size:17px;margin:0 0 36px;max-width:62ch}
+.sub b{color:var(--tinta)}
+section{padding:84px 0;border-bottom:1px solid var(--linea)}
+
+/* ===== portada ===== */
+.hero{
+  min-height:92vh;display:flex;flex-direction:column;
+  border-bottom:1px solid var(--linea);
+  background:
+    radial-gradient(820px 460px at 50% 42%, rgba(59,108,246,.16), transparent 68%),
+    var(--fondo);
+  text-align:center;position:relative;overflow:hidden;
+}
+.hero .marca{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding-top:34px;font-weight:800;font-size:19px;letter-spacing:.02em;
+}
+.hero .marca small{
+  display:block;font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:8.5px;letter-spacing:.36em;color:var(--muted);font-weight:600;text-align:left;
+}
+.hero .centro{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 22px 40px}
+.viz{position:relative;height:min(46vh,420px);max-width:900px;margin:0 auto;width:100%}
+.viz canvas{position:absolute;inset:0;width:100%;height:100%}
+.chip{
+  position:absolute;transform:translate(-50%,-50%);
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:10.5px;letter-spacing:.05em;white-space:nowrap;
+  padding:4px 9px;border-radius:3px;border:1px solid;opacity:0;
+  transition:opacity .5s ease;pointer-events:none;z-index:2;
+}
+.chip.on{opacity:1}
+.chip.zi{color:var(--cian);border-color:rgba(34,211,238,.42);background:rgba(34,211,238,.08)}
+.chip.zc{color:var(--azulv);border-color:rgba(91,133,255,.48);background:rgba(59,108,246,.13)}
+.chip.zo{color:var(--violeta);border-color:rgba(167,139,250,.48);background:rgba(167,139,250,.1)}
+.hero h1{
+  font-size:clamp(34px,6vw,58px);font-weight:800;font-stretch:91%;
+  letter-spacing:-.02em;line-height:1.04;margin:18px 0 14px;text-wrap:balance;
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(92deg,var(--cian),var(--azulv) 55%,var(--violeta));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero .baja{color:var(--muted);font-size:17px;max-width:54ch;margin:0 auto 30px}
+.hero .baja b{color:var(--tinta)}
+.hero .ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.flecha{
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  color:var(--muted);font-size:20px;animation:bajar 1.8s ease-in-out infinite;
+}
+@keyframes bajar{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,7px)}}
+
+/* ===== diagnóstico ===== */
+.diag-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:start}
+@media (max-width:860px){.diag-grid{grid-template-columns:1fr}}
+.senales{display:grid;gap:10px}
+.senal{
+  display:flex;gap:14px;align-items:flex-start;cursor:pointer;
+  border:1px solid var(--linea);border-radius:7px;background:var(--panel);
+  padding:15px 18px;transition:border-color .15s ease, background .15s ease;
+  user-select:none;
+}
+.senal:hover{border-color:var(--linea-f)}
+.senal input{position:absolute;opacity:0;pointer-events:none}
+.senal .caja{
+  flex:none;width:22px;height:22px;margin-top:2px;border-radius:5px;
+  border:1.5px solid var(--linea-f);display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:#fff;transition:background .15s ease,border-color .15s ease;
+}
+.senal.si{border-color:rgba(59,108,246,.6);background:linear-gradient(180deg,rgba(59,108,246,.12),var(--panel) 80%)}
+.senal.si .caja{background:var(--azul);border-color:var(--azul)}
+.senal .caja::after{content:"";opacity:0}
+.senal.si .caja::after{content:"✓";opacity:1}
+.senal .tx{font-size:15px;color:var(--cuerpo);line-height:1.45}
+.senal.si .tx{color:var(--tinta)}
+.senal .motorcito{
+  display:block;margin-top:4px;
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:10px;letter-spacing:.08em;color:var(--muted);
+  opacity:0;transition:opacity .2s ease;
+}
+.senal.si .motorcito{opacity:1;color:var(--cian)}
+.veredicto{
+  position:sticky;top:22px;
+  border:1px solid var(--linea);border-radius:9px;background:var(--panel);
+  padding:28px 28px;text-align:center;
+}
+.veredicto .cont{
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:12px;letter-spacing:.16em;color:var(--muted);margin:0 0 10px;
+}
+.veredicto .cont b{color:var(--cian);font-size:15px}
+.medidor{
+  height:8px;border-radius:4px;background:var(--panel2);overflow:hidden;margin:0 0 18px;
+}
+.medidor i{
+  display:block;height:100%;width:0%;border-radius:4px;
+  background:linear-gradient(90deg,var(--cian),var(--azulv) 60%,var(--violeta));
+  transition:width .35s ease;
+}
+.veredicto .vtx{font-size:18px;font-weight:800;font-stretch:93%;line-height:1.3;margin:0 0 8px;min-height:52px}
+.veredicto .vsub{font-size:13.5px;color:var(--muted);margin:0 0 20px;min-height:40px}
+.veredicto .btn{width:100%}
+.veredicto .nota{margin:12px 0 0;font-size:12px;color:var(--muted)}
+
+/* ===== simulador ===== */
+.simu{position:relative}
+.simu .escena{
+  position:relative;height:440px;
+  border:1px solid var(--linea);border-radius:10px;overflow:hidden;
+  background:
+    radial-gradient(640px 340px at 50% 45%, rgba(59,108,246,.13), transparent 70%),
+    var(--panel);
+}
+.simu canvas{position:absolute;inset:0;width:100%;height:100%}
+.simu .panel-caso{
+  position:absolute;left:18px;top:18px;z-index:3;
+  display:flex;gap:8px;flex-wrap:wrap;max-width:44%;
+}
+.doc{
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:11px;letter-spacing:.04em;
+  padding:6px 11px;border-radius:4px;
+  border:1px solid rgba(34,211,238,.45);color:var(--cian);background:rgba(34,211,238,.09);
+  opacity:0;transform:translateX(-14px);
+  transition:opacity .4s ease, transform .4s ease;
+}
+.doc.on{opacity:1;transform:none}
+.registro{
+  position:absolute;right:18px;top:18px;bottom:18px;z-index:3;
+  width:min(46%,340px);display:flex;flex-direction:column;justify-content:flex-start;
+  gap:6px;pointer-events:none;
+}
+.log{
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:11px;color:var(--azulv);letter-spacing:.03em;
+  background:rgba(59,108,246,.1);border:1px solid rgba(91,133,255,.3);
+  border-radius:4px;padding:5px 10px;
+  opacity:0;transform:translateY(6px);
+  transition:opacity .35s ease, transform .35s ease;
+}
+.log.on{opacity:1;transform:none}
+.log.fin{color:var(--violeta);background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.35)}
+.resultado{
+  position:absolute;left:50%;bottom:20px;transform:translate(-50%,16px);z-index:4;
+  width:min(92%,560px);
+  border:1px solid rgba(167,139,250,.5);border-radius:9px;
+  background:rgba(13,16,38,.94);
+  padding:18px 22px;opacity:0;
+  transition:opacity .5s ease, transform .5s ease;
+}
+.resultado.on{opacity:1;transform:translate(-50%,0)}
+.resultado .rt{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;
+}
+.resultado .rr{
+  font-size:20px;font-weight:800;font-stretch:92%;letter-spacing:-.01em;
+}
+.resultado .rr.ok{color:var(--ok)} .resultado .rr.rev{color:var(--alerta)} .resultado .rr.info{color:var(--violeta)}
+.resultado .rtiempo{
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:11px;color:var(--muted);letter-spacing:.08em;margin-left:auto;
+}
+.resultado .rdet{font-size:13.5px;color:var(--cuerpo);margin:0}
+.simu-controles{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:22px}
+.simu-controles .caso-actual{
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  font-size:12px;color:var(--muted);letter-spacing:.06em;
+}
+.simu-controles .caso-actual b{color:var(--tinta);font-weight:600}
+
+/* ===== proceso ===== */
+.fases{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:960px){.fases{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:540px){.fases{grid-template-columns:1fr}}
+.fase{
+  border:1px solid var(--linea);border-radius:8px;background:var(--panel);
+  padding:20px 20px;
+}
+.fase .n{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.14em;color:var(--violeta);font-weight:600}
+.fase h3{margin:8px 0 6px;font-size:16px;font-weight:800;font-stretch:94%}
+.fase p{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
+.fase .ud{
+  margin-top:10px;padding-top:10px;border-top:1px dashed var(--linea);
+  font-size:12px;color:var(--cian);
+}
+.fase .ud b{font-weight:600}
+
+/* ===== economía ===== */
+.eco-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media (max-width:860px){.eco-grid{grid-template-columns:1fr}}
+.metrica{
+  border:1px solid rgba(34,211,238,.38);border-radius:9px;
+  background:linear-gradient(135deg,rgba(34,211,238,.08),var(--panel) 60%);
+  padding:28px 30px;
+}
+.metrica .t{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:11px;letter-spacing:.2em;color:var(--cian);margin:0 0 8px;font-weight:600}
+.metrica .big{font-size:clamp(24px,3.4vw,34px);font-weight:800;font-stretch:91%;letter-spacing:-.015em;margin:0 0 10px}
+.metrica p{margin:0;color:var(--cuerpo);font-size:14.5px}
+.tabla{border:1px solid var(--linea);border-radius:9px;background:var(--panel);overflow:hidden}
+.tabla table{border-collapse:collapse;width:100%}
+.tabla th,.tabla td{padding:12px 20px;text-align:left;font-size:14px;border-bottom:1px solid var(--linea)}
+.tabla tr:last-child td{border-bottom:0}
+.tabla th{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.16em;font-weight:600}
+.tabla th:first-child,.tabla td:first-child{color:var(--muted)}
+.tabla th:last-child{color:var(--azulv)}
+.tabla td:last-child{color:var(--tinta);font-weight:500}
+
+/* ===== empezar ===== */
+ol.pasos{margin:0;padding:0;list-style:none;display:grid;gap:12px;counter-reset:p;max-width:720px}
+ol.pasos li{
+  counter-increment:p;font-size:15px;color:var(--cuerpo);line-height:1.5;
+  padding:16px 18px 16px 58px;position:relative;
+  border:1px solid var(--linea);border-radius:8px;background:var(--panel);
+}
+ol.pasos li b{color:var(--tinta)}
+ol.pasos li::before{
+  content:counter(p);position:absolute;left:16px;top:15px;
+  width:28px;height:28px;border-radius:50%;
+  border:1.5px solid var(--azulv);color:var(--azulv);
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.frase{
+  margin-top:30px;border:1px solid rgba(167,139,250,.4);border-radius:9px;
+  background:rgba(167,139,250,.08);padding:24px 28px;text-align:center;
+  font-size:clamp(17px,2.2vw,21px);font-weight:700;font-stretch:94%;
+}
+.frase .mono{display:block;font-size:11px;font-weight:600;letter-spacing:.18em;color:var(--violeta);margin-bottom:6px}
+
+/* ===== cierre ===== */
+.cierre{
+  border-bottom:0;text-align:center;
+  background:
+    radial-gradient(760px 400px at 50% 20%, rgba(59,108,246,.16), transparent 65%),
+    var(--fondo);
+}
+.cierre h2{font-size:clamp(28px,4.6vw,44px);max-width:20ch;margin:0 auto 14px}
+.cierre .sub{margin:0 auto 30px}
+footer{padding:38px 0;border-top:1px solid var(--linea)}
+.foot{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  color:var(--muted);font-size:13px;
+}
+.foot .der{margin-left:auto;text-align:right}
+@media (max-width:640px){.foot .der{margin-left:0;text-align:left}}
+.rev{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s ease}
+.rev.vis{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.rev{opacity:1;transform:none}}
+</style>
+
+<!-- ============ PORTADA ============ -->
+<div class="hero" id="inicio">
+  <div class="marca">
+    <svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true">
+      <g stroke="var(--azulv)" stroke-width="7"><line x1="22" y1="50" x2="72" y2="20"/><line x1="22" y1="50" x2="72" y2="80"/></g>
+      <g fill="var(--azulv)"><circle cx="22" cy="50" r="15"/><circle cx="72" cy="20" r="15"/><circle cx="72" cy="80" r="15"/></g>
+    </svg>
+    <span>DOOIF<small>DECISION&nbsp;SYSTEMS</small></span>
+  </div>
+  <div class="centro">
+    <div class="viz" id="vizHero">
+      <canvas id="cuboHero"></canvas>
+    </div>
+    <h1>Transformamos información<br>en <em>decisiones</em>.</h1>
+    <p class="baja">
+      Este es un recorrido interactivo de <b>3 minutos</b>. Primero, revise si
+      su empresa tiene lo que nosotros optimizamos. Después, vea al Cubo
+      procesar un caso ante sus ojos. Al final, el camino para empezar.
+    </p>
+    <div class="ctas">
+      <a class="btn" href="#diagnostico">Revisar mi operación</a>
+      <a class="btn btn-linea" href="#cubo">Ver el Cubo en acción</a>
+    </div>
+  </div>
+  <div class="flecha" aria-hidden="true">↓</div>
+</div>
+
+<!-- ============ DIAGNÓSTICO ============ -->
+<section id="diagnostico">
+  <div class="wrap">
+    <p class="eyebrow">PASO 1 · IDENTIFIQUE EL PROBLEMA</p>
+    <h2>Marque lo que reconozca en su empresa.</h2>
+    <p class="sub">
+      Estas son las señales de que una operación está <b>pagando de más por
+      cada decisión</b>. Son exactamente las cosas que Dooif optimiza — por
+      eso se las pedimos revisar. Sea honesto: nadie más está mirando.
+    </p>
+    <div class="diag-grid">
+      <div class="senales" id="senales" role="group" aria-label="señales de diagnóstico">
+        <label class="senal"><input type="checkbox" data-m="DOCUMENT INTELLIGENCE"><span class="caja"></span><span class="tx">Los expedientes o solicitudes se acumulan esperando revisión.<span class="motorcito">→ eso lo optimiza DOCUMENT INTELLIGENCE</span></span></label>
+        <label class="senal"><input type="checkbox" data-m="RULES ENGINE"><span class="caja"></span><span class="tx">Dos analistas pueden resolver el mismo caso de forma distinta.<span class="motorcito">→ eso lo optimiza RULES ENGINE</span></span></label>
+        <label class="senal"><input type="checkbox" data-m="AUDIT & TRACEABILITY"><span class="caja"></span><span class="tx">Los errores aparecen tarde y nadie puede explicar de dónde salieron.<span class="motorcito">→ eso lo optimiza AUDIT &amp; TRACEABILITY</span></span></label>
+        <label class="senal"><input type="checkbox" data-m="EVALUATION ENGINE"><span class="caja"></span><span class="tx">Procesar más volumen significa, sí o sí, contratar más gente.<span class="motorcito">→ eso lo optimiza EVALUATION ENGINE</span></span></label>
+        <label class="senal"><input type="checkbox" data-m="CAPTURA DE CONOCIMIENTO"><span class="caja"></span><span class="tx">El conocimiento clave vive en la cabeza de dos o tres personas.<span class="motorcito">→ eso lo resuelve la CAPTURA DE CONOCIMIENTO</span></span></label>
+        <label class="senal"><input type="checkbox" data-m="VISION + VOICE INTELLIGENCE"><span class="caja"></span><span class="tx">Hay información valiosa atrapada en fotos, audios, planillas y PDFs.<span class="motorcito">→ eso lo optimizan VISION + VOICE INTELLIGENCE</span></span></label>
+        <label class="senal"><input type="checkbox" data-m="PROCESS INTELLIGENCE"><span class="caja"></span><span class="tx">Los peaks de demanda se transforman en atrasos y reclamos.<span class="motorcito">→ eso lo optimiza PROCESS INTELLIGENCE</span></span></label>
+        <label class="senal"><input type="checkbox" data-m="DECISION ENGINE"><span class="caja"></span><span class="tx">Se pierden oportunidades porque no se alcanza a revisar todo.<span class="motorcito">→ eso lo optimiza DECISION ENGINE</span></span></label>
+        <label class="senal"><input type="checkbox" data-m="ECONOMÍA DE LA DECISIÓN"><span class="caja"></span><span class="tx">Nadie sabe cuánto cuesta producir una decisión (aprobar, evaluar, resolver).<span class="motorcito">→ eso lo mide la ECONOMÍA DE LA DECISIÓN</span></span></label>
+        <label class="senal"><input type="checkbox" data-m="EL MÉTODO DOOIF"><span class="caja"></span><span class="tx">Cuando alguien renuncia, el proceso queda cojo durante semanas.<span class="motorcito">→ eso lo previene EL MÉTODO DOOIF</span></span></label>
+      </div>
+      <div class="veredicto" aria-live="polite">
+        <p class="cont">SEÑALES: <b id="vNum">0</b> / 10</p>
+        <div class="medidor"><i id="vBarra"></i></div>
+        <p class="vtx" id="vTitulo">Su diagnóstico aparecerá aquí.</p>
+        <p class="vsub" id="vSub">Marque las señales que reconozca — cada una corresponde a un motor que ya existe.</p>
+        <a class="btn" id="vBtn" href="#cubo">Ver qué haríamos con esto</a>
+        <p class="nota">Su selección viajará con usted hasta el final del recorrido.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EL CUBO / SIMULADOR ============ -->
+<section id="cubo">
+  <div class="wrap">
+    <p class="eyebrow">PASO 2 · VEA EL CUBO TRABAJAR</p>
+    <h2>Esto le hacemos a cada caso suyo.</h2>
+    <p class="sub">
+      Presione <b>Procesar un caso</b> y mire: la información entra por la
+      izquierda, el núcleo aplica conocimiento y reglas, y sale una decisión
+      con su evidencia — todo registrado, paso a paso.
+    </p>
+    <div class="simu rev">
+      <div class="escena" id="escena">
+        <canvas id="cuboSimu"></canvas>
+        <div class="panel-caso" id="panelDocs"></div>
+        <div class="registro" id="registro"></div>
+        <div class="resultado" id="resultado">
+          <div class="rt">
+            <span class="rr" id="rRes"></span>
+            <span class="rtiempo" id="rTiempo"></span>
+          </div>
+          <p class="rdet" id="rDet"></p>
+        </div>
+      </div>
+      <div class="simu-controles">
+        <button class="btn" id="btnProcesar">▶&nbsp; Procesar un caso</button>
+        <span class="caso-actual" id="casoActual"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESO ============ -->
+<section id="proceso">
+  <div class="wrap">
+    <p class="eyebrow">PASO 3 · ASÍ SE HACE</p>
+    <h2>De su experto al motor, en ocho fases.</h2>
+    <p class="sub">
+      No le instalamos "una IA". Capturamos <b>cómo decide su mejor gente</b>
+      y lo convertimos en capacidad digital — con su equipo adentro y
+      midiendo desde el primer día. En cada fase, esto ponemos nosotros y
+      esto pone usted:
+    </p>
+    <div class="fases rev">
+      <div class="fase"><span class="n">FASE·1</span><h3>Descubrir</h3><p>Identificamos dónde hay información, conocimiento, repetición y decisiones.</p><div class="ud"><b>Usted pone:</b> una reunión y franqueza.</div></div>
+      <div class="fase"><span class="n">FASE·2</span><h3>Levantar</h3><p>Mapeamos flujos, actores, documentos, criterios, reglas y excepciones.</p><div class="ud"><b>Usted pone:</b> acceso a su gente clave.</div></div>
+      <div class="fase"><span class="n">FASE·3</span><h3>Estructurar</h3><p>Convertimos conocimiento tácito en variables, criterios e instrumentos ejecutables.</p><div class="ud"><b>Usted pone:</b> validación del experto.</div></div>
+      <div class="fase"><span class="n">FASE·4</span><h3>Diseñar</h3><p>Seleccionamos motores y definimos la arquitectura de la solución.</p><div class="ud"><b>Usted pone:</b> prioridades del negocio.</div></div>
+      <div class="fase"><span class="n">FASE·5</span><h3>Configurar</h3><p>Parametrizamos documentos, reglas, integraciones, usuarios y resultados.</p><div class="ud"><b>Usted pone:</b> casos y sistemas reales.</div></div>
+      <div class="fase"><span class="n">FASE·6</span><h3>Validar</h3><p>Probamos con casos reales: tiempo, consistencia, error, costo y trazabilidad.</p><div class="ud"><b>Usted pone:</b> el juicio de sus analistas.</div></div>
+      <div class="fase"><span class="n">FASE·7</span><h3>Operar</h3><p>El motor entra en producción y genera resultados reales, vigilado y medido.</p><div class="ud"><b>Usted pone:</b> el volumen de siempre.</div></div>
+      <div class="fase"><span class="n">FASE·8</span><h3>Aprender</h3><p>Excepciones y nuevos criterios alimentan la evolución continua del motor.</p><div class="ud"><b>Usted pone:</b> nada — esto ya corre solo.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ECONOMÍA ============ -->
+<section id="economia">
+  <div class="wrap">
+    <p class="eyebrow">PASO 4 · LOS NÚMEROS</p>
+    <h2>La métrica que cambia la conversación.</h2>
+    <p class="sub">Usted conoce sus costos de personal y tecnología. ¿Pero cuánto cuesta producir <b>una</b> decisión?</p>
+    <div class="eco-grid rev">
+      <div class="metrica">
+        <p class="t">NUEVA MÉTRICA</p>
+        <p class="big">Costo por decisión</p>
+        <p>
+          Horas humanas + supervisión + reprocesos + errores + esperas +
+          excepciones, dividido por lo que realmente sale. La mayoría de los
+          procesos no lo sabe. Dooif lo mide, lo transparenta y lo reduce.
+          Cuando baja, usted puede <b>procesar más sin contratar</b> y
+          <b>competir con precios que su operación manual no soportaría</b>.
+        </p>
+      </div>
+      <div class="tabla">
+        <table>
+          <thead><tr><th>ANTES</th><th>CON DOOIF</th></tr></thead>
+          <tbody>
+            <tr><td>Procesamiento manual</td><td>Automatización asistida</td></tr>
+            <tr><td>Alta variabilidad</td><td>Consistencia</td></tr>
+            <tr><td>Tiempos extensos</td><td>Tiempos reducidos</td></tr>
+            <tr><td>Errores difíciles de localizar</td><td>Trazabilidad completa</td></tr>
+            <tr><td>Capacidad limitada</td><td>Escalabilidad</td></tr>
+            <tr><td>Costos ocultos</td><td>Ahorro medible</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EMPEZAR ============ -->
+<section id="empezar">
+  <div class="wrap">
+    <p class="eyebrow">PASO 5 · CÓMO EMPEZAR</p>
+    <h2>Pequeño, medible, rentable.</h2>
+    <p class="sub">No le pedimos un acto de fe. Le proponemos que <b>los números decidan</b>:</p>
+    <ol class="pasos rev">
+      <li><b>Diagnóstico del proceso.</b> Dónde se decide y cuánto cuesta hoy.</li>
+      <li><b>Un caso de uso acotado y medible.</b> El punto de mayor dolor, no toda la empresa.</li>
+      <li><b>Piloto con casos reales.</b> Sus expedientes, sus reglas, su gente.</li>
+      <li><b>Comparación Humano vs. Humano + Dooif.</b> Tiempo, consistencia, error y costo, lado a lado.</li>
+      <li><b>Impacto en números.</b> Si no conviene, ahí termina — usted se queda con el diagnóstico.</li>
+      <li><b>Escalamiento a producción.</b> Con el caso probado, el motor crece al resto del proceso.</li>
+    </ol>
+    <div class="frase rev">
+      <span class="mono">Y CUANDO EL PROCESO ESTÁ VALIDADO…</span>
+      Paga por expediente, evaluación o decisión — no por licencias.
+      Dooif gana cuando usted procesa más y gasta menos.
+    </div>
+  </div>
+</section>
+
+<!-- ============ CIERRE ============ -->
+<section class="cierre" id="contacto">
+  <div class="wrap">
+    <p class="eyebrow">EL SIGUIENTE PASO ES SUYO</p>
+    <h2>¿Cuánto le cuesta hoy producir esta decisión?</h2>
+    <p class="sub" id="cierreSub">
+      Respóndanos con una conversación de 30 minutos. Si marcó señales en el
+      diagnóstico, viajarán en su mensaje — así llegamos directo al grano.
+    </p>
+    <a class="btn" id="btnMail" href="mailto:planificacioneesingenieria@gmail.com?subject=Analizar%20mi%20proceso%20—%20DOOIF">ANALIZAR MI PROCESO</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <svg width="20" height="20" viewBox="0 0 100 100" aria-hidden="true">
+      <g stroke="var(--azulv)" stroke-width="7"><line x1="22" y1="50" x2="72" y2="20"/><line x1="22" y1="50" x2="72" y2="80"/></g>
+      <g fill="var(--azulv)"><circle cx="22" cy="50" r="15"/><circle cx="72" cy="20" r="15"/><circle cx="72" cy="80" r="15"/></g>
+    </svg>
+    <span><b style="color:var(--tinta)">DOOIF</b> · Transformamos información en decisiones.</span>
+    <span class="der">www.dooif.cl · Chile<br><span class="mono" style="font-size:10px;letter-spacing:.18em">POWERED BY DOOIF</span></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var CIAN = '#22D3EE', AZUL = '#5B85FF', VIOLETA = '#A78BFA';
+
+  /* ========== cubo reutilizable ========== */
+  function Cubo(canvas, zona){
+    var ctx = canvas.getContext('2d');
+    var W = 0, H = 0, CX = 0, CY = 0, t = 0, energia = 1, objetivo = 1;
+    var V = [];
+    for (var a = -1; a <= 1; a += 2)
+      for (var b = -1; b <= 1; b += 2)
+        for (var c = -1; c <= 1; c += 2) V.push([a, b, c]);
+    var E = [[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]];
+    var flujo = [];
+
+    function medir(){
+      var r = zona.getBoundingClientRect();
+      var dpr = Math.min(devicePixelRatio || 1, 2);
+      W = r.width; H = r.height;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      CX = W * 0.5; CY = H * 0.5;
+    }
+    function proyectar(v, ang, esc){
+      var x = v[0], y = v[1], z = v[2];
+      var ca = Math.cos(ang), sa = Math.sin(ang);
+      var x1 = x * ca - z * sa, z1 = x * sa + z * ca;
+      var ax = 0.42 + Math.sin(t * 0.0004) * 0.1;
+      var cb = Math.cos(ax), sb = Math.sin(ax);
+      var y1 = y * cb - z1 * sb, z2 = y * sb + z1 * cb;
+      var d = 3.6, f = d / (d - z2);
+      return [CX + x1 * esc * f, CY + y1 * esc * f, f];
+    }
+    function sembrar(){
+      flujo = [];
+      var n = Math.max(12, Math.min(26, Math.floor(W / 34)));
+      for (var i = 0; i < n; i++){
+        flujo.push({dir: i % 2 ? 1 : -1, p: Math.random(),
+          vel: 0.0018 + Math.random() * 0.0022,
+          y0: 0.08 + Math.random() * 0.84, cur: (Math.random() - .5) * 0.5});
+      }
+    }
+    function ruta(f){
+      var x0, y0, x1, y1;
+      if (f.dir < 0){ x0 = -12; y0 = H * f.y0; x1 = CX; y1 = CY; }
+      else { x0 = CX; y0 = CY; x1 = W + 12; y1 = H * f.y0; }
+      var cx = (x0 + x1) / 2, cy = (y0 + y1) / 2 + H * f.cur * 0.3;
+      var u = f.p, iu = 1 - u;
+      return [iu*iu*x0 + 2*iu*u*cx + u*u*x1, iu*iu*y0 + 2*iu*u*cy + u*u*y1];
+    }
+    function marco(ts){
+      t = ts || 0;
+      energia += (objetivo - energia) * 0.05;
+      ctx.clearRect(0, 0, W, H);
+      var esc = Math.min(W, H) * 0.19;
+      var ang = t * 0.00055 * energia;
+
+      flujo.forEach(function(f){
+        f.p += f.vel * energia;
+        if (f.p >= 1){ f.p = 0; f.y0 = 0.08 + Math.random() * 0.84; f.cur = (Math.random()-.5)*0.5; }
+        var col = f.dir < 0 ? CIAN : VIOLETA;
+        for (var k = 0; k < 4; k++){
+          var guard = f.p; f.p = Math.max(0, f.p - k * 0.018);
+          var q = ruta(f); f.p = guard;
+          ctx.globalAlpha = (f.dir < 0 ? (0.55 - f.p * 0.25) : (0.2 + f.p * 0.4)) * (1 - k / 4);
+          ctx.fillStyle = col;
+          ctx.beginPath(); ctx.arc(q[0], q[1], 2 - k * 0.35, 0, Math.PI * 2); ctx.fill();
+        }
+      });
+      ctx.globalAlpha = 1;
+
+      var g = ctx.createRadialGradient(CX, CY, 0, CX, CY, esc * 2.6);
+      g.addColorStop(0, 'rgba(59,108,246,' + (0.18 + energia * 0.1) + ')');
+      g.addColorStop(0.6, 'rgba(59,108,246,.05)');
+      g.addColorStop(1, 'rgba(59,108,246,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(CX - esc * 3, CY - esc * 3, esc * 6, esc * 6);
+
+      var pin = V.map(function(v){ return proyectar(v, -ang * 1.6, esc * 0.45); });
+      ctx.strokeStyle = VIOLETA; ctx.globalAlpha = .5; ctx.lineWidth = 1;
+      E.forEach(function(e){
+        ctx.beginPath(); ctx.moveTo(pin[e[0]][0], pin[e[0]][1]);
+        ctx.lineTo(pin[e[1]][0], pin[e[1]][1]); ctx.stroke();
+      });
+
+      var p = V.map(function(v){ return proyectar(v, ang, esc); });
+      ctx.globalAlpha = 1; ctx.strokeStyle = AZUL; ctx.lineWidth = 1.6;
+      ctx.shadowColor = AZUL; ctx.shadowBlur = 10 + energia * 8;
+      E.forEach(function(e){
+        ctx.beginPath(); ctx.moveTo(p[e[0]][0], p[e[0]][1]);
+        ctx.lineTo(p[e[1]][0], p[e[1]][1]); ctx.stroke();
+      });
+      ctx.shadowBlur = 0; ctx.fillStyle = AZUL;
+      p.forEach(function(q){
+        ctx.globalAlpha = .9;
+        ctx.beginPath(); ctx.arc(q[0], q[1], 2.2 * q[2] / 1.3, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      raf = requestAnimationFrame(marco);
+    }
+    var raf = null;
+    this.acelerar = function(x){ objetivo = x; };
+    this.iniciar = function(){
+      if (raf) cancelAnimationFrame(raf);
+      medir(); sembrar();
+      if (reduce){ t = 900; energia = 1; marco(900); cancelAnimationFrame(raf); }
+      else { raf = requestAnimationFrame(marco); }
+    };
+    var self = this;
+    addEventListener('resize', function(){ self.iniciar(); });
+  }
+
+  var heroViz = document.getElementById('vizHero');
+  var cuboHero = new Cubo(document.getElementById('cuboHero'), heroViz);
+  cuboHero.iniciar();
+
+  /* chips flotantes del hero */
+  var L_IN = ['Documento identificado','Información extraída','Vigencia verificada','Audio transcrito','Fuente consultada','Imagen analizada'];
+  var L_CORE = ['Aplicando instrumento','Regla 018','Validación cruzada','Scoring','Excepción detectada','Trazabilidad'];
+  var L_OUT = ['Cumple','Aprobado','Riesgo bajo','Calificación 6.4','Requiere revisión','Decisión trazable'];
+  function chipHero(){
+    var zonas = [['zi', L_IN, [0.03, 0.24]], ['zc', L_CORE, [0.36, 0.64]], ['zo', L_OUT, [0.76, 0.97]]];
+    var z = zonas[Math.floor(Math.random() * 3)];
+    var el = document.createElement('span');
+    el.className = 'chip ' + z[0];
+    el.textContent = z[1][Math.floor(Math.random() * z[1].length)];
+    var r = heroViz.getBoundingClientRect();
+    var x = r.width * (z[2][0] + Math.random() * (z[2][1] - z[2][0]));
+    var y = z[0] === 'zc'
+      ? r.height * (Math.random() < .5 ? 0.08 : 0.9)
+      : r.height * (0.12 + Math.random() * 0.76);
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+    heroViz.appendChild(el);
+    requestAnimationFrame(function(){ el.classList.add('on'); });
+    setTimeout(function(){ el.classList.remove('on'); }, 2100);
+    setTimeout(function(){ el.remove(); }, 2800);
+    setTimeout(chipHero, 700 + Math.random() * 600);
+  }
+  if (!reduce) chipHero();
+  else {
+    [['zi','Documento identificado',.07,.3],['zi','Audio transcrito',.05,.62],['zc','Regla 018',.5,.07],['zo','Cumple',.88,.3],['zo','Decisión trazable',.85,.66]].forEach(function(s){
+      var el = document.createElement('span');
+      el.className = 'chip on ' + s[0]; el.textContent = s[1];
+      var r = heroViz.getBoundingClientRect();
+      el.style.left = r.width * s[2] + 'px'; el.style.top = r.height * s[3] + 'px';
+      heroViz.appendChild(el);
+    });
+  }
+
+  /* ========== diagnóstico ========== */
+  var senales = Array.prototype.slice.call(document.querySelectorAll('.senal'));
+  var vNum = document.getElementById('vNum'), vBarra = document.getElementById('vBarra');
+  var vTitulo = document.getElementById('vTitulo'), vSub = document.getElementById('vSub');
+  var marcadas = [];
+  function actualizar(){
+    marcadas = senales.filter(function(s){ return s.querySelector('input').checked; })
+      .map(function(s){ return s.querySelector('.tx').childNodes[0].textContent.trim(); });
+    var n = marcadas.length;
+    vNum.textContent = n;
+    vBarra.style.width = (n * 10) + '%';
+    if (n === 0){
+      vTitulo.textContent = 'Su diagnóstico aparecerá aquí.';
+      vSub.textContent = 'Marque las señales que reconozca — cada una corresponde a un motor que ya existe.';
+    } else if (n <= 2){
+      vTitulo.textContent = 'Hay señales. Vale la pena mirar.';
+      vSub.textContent = 'Con ' + n + ' señal' + (n > 1 ? 'es' : '') + ' ya hay un caso de uso acotado y medible para partir.';
+    } else if (n <= 5){
+      vTitulo.textContent = 'Su operación tiene al menos un Motor Dooif esperando.';
+      vSub.textContent = n + ' señales: hay decisiones repetitivas pagándose a precio manual. Eso se optimiza.';
+    } else {
+      vTitulo.textContent = 'Está pagando de más todos los días.';
+      vSub.textContent = n + ' de 10 señales: cada semana sin medir el costo por decisión es margen que se va. Hablemos.';
+    }
+    armarMail();
+  }
+  senales.forEach(function(s){
+    var input = s.querySelector('input');
+    input.addEventListener('change', function(){
+      s.classList.toggle('si', input.checked);
+      actualizar();
+    });
+  });
+
+  /* ========== simulador ========== */
+  var escena = document.getElementById('escena');
+  var cuboSimu = new Cubo(document.getElementById('cuboSimu'), escena);
+  cuboSimu.iniciar();
+
+  var CASOS = [
+    {nombre:'Licencia médica', docs:['Licencia 21 días','Informe médico','Historial del trabajador'],
+     logs:['Documento identificado: licencia tipo 1','Datos extraídos: diagnóstico, reposo, emisor','Vigencia y emisor verificados','Regla 018: reposo coherente con diagnóstico ✓','Validación cruzada con historial ✓','Scoring de consistencia: 94/100'],
+     res:{clase:'ok', tx:'PROPONER: APROBAR', det:'Evidencia completa y consistente. Propuesta lista para visado del profesional.', tiempo:'11 s'}},
+    {nombre:'Siniestro vehicular', docs:['Denuncio','Fotos del vehículo','Póliza vigente','Presupuesto taller'],
+     logs:['Denuncio clasificado: daño parcial','Fotos analizadas: daño frontal izquierdo','Cobertura verificada en póliza','Presupuesto contrastado con daño visible','Regla 044: sin indicios de preexistencia ✓','Scoring de fraude: riesgo bajo'],
+     res:{clase:'ok', tx:'LIQUIDAR PARCIAL', det:'Monto propuesto según cobertura y daño acreditado. Trazabilidad completa del cálculo.', tiempo:'14 s'}},
+    {nombre:'Permiso municipal', docs:['Solicitud','Planos','Certificado de dominio'],
+     logs:['Expediente armado: 3 documentos','Planos verificados contra ordenanza','Dominio vigente confirmado','Regla 112: falta certificado de informaciones previas','Excepción registrada y notificada'],
+     res:{clase:'rev', tx:'REQUIERE UN DOCUMENTO', det:'Falta certificado de informaciones previas. Se notificó al solicitante en el acto — sin fila, sin vuelta a empezar.', tiempo:'9 s'}},
+    {nombre:'Evaluación de proveedor', docs:['Antecedentes legales','Estados financieros','Historial de servicio'],
+     logs:['Antecedentes verificados en fuentes externas','Indicadores financieros extraídos','Historial de cumplimiento analizado','Instrumento de evaluación aplicado','Ponderación por criterio calculada'],
+     res:{clase:'info', tx:'SCORE 87/100 · APTO', det:'Proveedor recomendado con dos observaciones menores documentadas para la negociación.', tiempo:'12 s'}},
+    {nombre:'Licitación pública', docs:['Bases administrativas','Bases técnicas','Anexos'],
+     logs:['Bases ingestadas: 240 páginas','Requisitos técnicos extraídos','Match contra capacidades de la empresa','Regla 07: experiencia acreditable suficiente ✓','Estimación de competitividad calculada'],
+     res:{clase:'ok', tx:'MATCH 92% · PRESENTAR', det:'Alta afinidad con sus capacidades. Checklist de anexos y plazos generado automáticamente.', tiempo:'18 s'}}
+  ];
+  var iCaso = 0, corriendo = false, timers = [];
+  var panelDocs = document.getElementById('panelDocs');
+  var registro = document.getElementById('registro');
+  var resultado = document.getElementById('resultado');
+  var btnP = document.getElementById('btnProcesar');
+  var casoActual = document.getElementById('casoActual');
+
+  function limpiar(){
+    timers.forEach(clearTimeout); timers = [];
+    panelDocs.innerHTML = ''; registro.innerHTML = '';
+    resultado.classList.remove('on');
+  }
+  function procesar(){
+    if (corriendo) return;
+    corriendo = true; btnP.disabled = true; btnP.style.opacity = .55;
+    limpiar();
+    var caso = CASOS[iCaso % CASOS.length]; iCaso++;
+    casoActual.innerHTML = 'CASO: <b>' + caso.nombre + '</b>';
+    cuboSimu.acelerar(2.6);
+    var tm = 0, paso = reduce ? 10 : 520;
+    caso.docs.forEach(function(d){
+      tm += paso;
+      timers.push(setTimeout(function(){
+        var el = document.createElement('span');
+        el.className = 'doc'; el.textContent = '⎘ ' + d;
+        panelDocs.appendChild(el);
+        requestAnimationFrame(function(){ el.classList.add('on'); });
+      }, tm));
+    });
+    tm += paso * 0.6;
+    caso.logs.forEach(function(l, i){
+      tm += reduce ? 10 : 620;
+      timers.push(setTimeout(function(){
+        var el = document.createElement('span');
+        el.className = 'log' + (i === caso.logs.length - 1 ? ' fin' : '');
+        el.textContent = '· ' + l;
+        registro.appendChild(el);
+        requestAnimationFrame(function(){ el.classList.add('on'); });
+      }, tm));
+    });
+    tm += reduce ? 20 : 800;
+    timers.push(setTimeout(function(){
+      document.getElementById('rRes').textContent = caso.res.tx;
+      document.getElementById('rRes').className = 'rr ' + caso.res.clase;
+      document.getElementById('rTiempo').textContent = caso.res.tiempo + ' · TRAZABLE';
+      document.getElementById('rDet').textContent = caso.res.det;
+      resultado.classList.add('on');
+      cuboSimu.acelerar(1);
+      corriendo = false; btnP.disabled = false; btnP.style.opacity = 1;
+      btnP.innerHTML = '↻&nbsp; Procesar otro caso';
+    }, tm));
+  }
+  btnP.addEventListener('click', procesar);
+
+  /* ========== mail con diagnóstico ========== */
+  var btnMail = document.getElementById('btnMail');
+  function armarMail(){
+    var cuerpo = 'Hola DOOIF:%0D%0A%0D%0AHice el recorrido interactivo y quiero analizar mi proceso.%0D%0A';
+    if (marcadas.length){
+      cuerpo += '%0D%0ASeñales que reconocí en mi operación (' + marcadas.length + '/10):%0D%0A';
+      marcadas.forEach(function(m){ cuerpo += '- ' + encodeURIComponent(m) + '%0D%0A'; });
+    }
+    cuerpo += '%0D%0AMi proceso: %0D%0A';
+    btnMail.href = 'mailto:planificacioneesingenieria@gmail.com?subject=' +
+      encodeURIComponent('Analizar mi proceso — DOOIF') + '&body=' + cuerpo;
+  }
+  armarMail();
+
+  /* ========== reveals ========== */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('vis'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.rev').forEach(function(el){ io.observe(el); });
+})();
+</script>
