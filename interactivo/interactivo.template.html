@@ -307,10 +307,19 @@ footer{padding:38px 0;border-top:1px solid var(--linea)}
 }
 .foot .der{margin-left:auto;text-align:right}
 @media (max-width:640px){.foot .der{margin-left:0;text-align:left}}
-.rev{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s ease}
-.rev.vis{opacity:1;transform:none}
-@media (prefers-reduced-motion: reduce){.rev{opacity:1;transform:none}}
+/* revelado al hacer scroll: SOLO si hay JS (clase .js); sin JS todo es visible */
+.js .rev{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s ease}
+.js .rev.vis{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){.js .rev{opacity:1;transform:none}}
+
+/* cubo estático de respaldo: visible solo cuando no corre JS */
+.cubo-est{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.cubo-est svg{max-width:86%;max-height:96%}
+.js .cubo-est{display:none}
+.solo-nojs{display:block}
+.js .solo-nojs{display:none}
 </style>
+<script>document.documentElement.className += ' js';</script>
 
 <!-- ============ PORTADA ============ -->
 <div class="hero" id="inicio">
@@ -324,6 +333,7 @@ footer{padding:38px 0;border-top:1px solid var(--linea)}
   <div class="centro">
     <div class="viz" id="vizHero">
       <canvas id="cuboHero"></canvas>
+      <div class="cubo-est" aria-hidden="true">@@CUBOSVG@@</div>
     </div>
     <h1>Transformamos información<br>en <em>decisiones</em>.</h1>
     <p class="baja">
@@ -387,6 +397,8 @@ footer{padding:38px 0;border-top:1px solid var(--linea)}
     <div class="simu rev">
       <div class="escena" id="escena">
         <canvas id="cuboSimu"></canvas>
+        <div class="cubo-est" aria-hidden="true">@@CUBOSVG2@@</div>
+        <p class="solo-nojs" style="position:absolute;left:0;right:0;bottom:14px;text-align:center;margin:0;font-size:13px;color:var(--muted)">Para ver el Cubo procesar un caso en vivo, abra este archivo en su navegador.</p>
         <div class="panel-caso" id="panelDocs"></div>
         <div class="registro" id="registro"></div>
         <div class="resultado" id="resultado">
@@ -528,8 +540,8 @@ footer{padding:38px 0;border-top:1px solid var(--linea)}
 
     function medir(){
       var r = zona.getBoundingClientRect();
-      var dpr = Math.min(devicePixelRatio || 1, 2);
       W = r.width; H = r.height;
+      var dpr = Math.min(devicePixelRatio || 1, W < 700 ? 1.5 : 2);
       canvas.width = W * dpr; canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       CX = W * 0.5; CY = H * 0.5;
@@ -598,7 +610,7 @@ footer{padding:38px 0;border-top:1px solid var(--linea)}
 
       var p = V.map(function(v){ return proyectar(v, ang, esc); });
       ctx.globalAlpha = 1; ctx.strokeStyle = AZUL; ctx.lineWidth = 1.6;
-      ctx.shadowColor = AZUL; ctx.shadowBlur = 10 + energia * 8;
+      ctx.shadowColor = AZUL; ctx.shadowBlur = (W < 700 ? 5 : 10) + energia * (W < 700 ? 3 : 8);
       E.forEach(function(e){
         ctx.beginPath(); ctx.moveTo(p[e[0]][0], p[e[0]][1]);
         ctx.lineTo(p[e[1]][0], p[e[1]][1]); ctx.stroke();
@@ -639,6 +651,7 @@ footer{padding:38px 0;border-top:1px solid var(--linea)}
     el.textContent = z[1][Math.floor(Math.random() * z[1].length)];
     var r = heroViz.getBoundingClientRect();
     var x = r.width * (z[2][0] + Math.random() * (z[2][1] - z[2][0]));
+    x = Math.min(Math.max(x, 92), r.width - 92);   // que no se corte en los bordes
     var y = z[0] === 'zc'
       ? r.height * (Math.random() < .5 ? 0.08 : 0.9)
       : r.height * (0.12 + Math.random() * 0.76);
