@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>DOOIF — Libro</title>
+<style>
+@font-face{
+  font-family:'Archivo';font-style:normal;font-weight:100 900;
+  src:url(data:font/woff2;base64,@@FONT@@) format('woff2');
+}
+@page{size:A4;margin:0}
+:root{
+  --fondo:#060B18;--panel:#0C1329;--panel2:#101A38;
+  --tinta:#EAF0FC;--cuerpo:#B9C6E0;--muted:#8395B8;
+  --linea:rgba(142,163,214,.18);--linea-f:rgba(142,163,214,.34);
+  --cian:#22D3EE;--azul:#3B6CF6;--azulv:#6E92FF;--violeta:#A78BFA;
+  --ok:#34D399;
+}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Archivo',system-ui,sans-serif;
+  background:#000;color:var(--tinta);
+}
+.mono{font-family:'Courier New',ui-monospace,Menlo,monospace}
+
+.page{
+  width:210mm;height:296mm;overflow:hidden;position:relative;
+  page-break-after:always;background:var(--fondo);
+  padding:20mm 18mm 20mm;
+}
+.pie{
+  position:absolute;left:18mm;right:18mm;bottom:9mm;
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:7.5pt;letter-spacing:.18em;color:var(--muted);
+}
+.pie b{color:var(--azulv);font-weight:600}
+
+.eyebrow{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:9pt;letter-spacing:.24em;color:var(--cian);
+  margin:0 0 5mm;font-weight:700;
+}
+h2{
+  font-size:24pt;font-weight:800;font-stretch:92%;
+  letter-spacing:-.015em;line-height:1.06;margin:0 0 6mm;color:var(--tinta);
+}
+h3{font-size:12.5pt;font-weight:800;font-stretch:94%;margin:0 0 2.5mm;color:var(--tinta)}
+p{font-size:10.3pt;line-height:1.6;color:var(--cuerpo);margin:0 0 3.6mm}
+p b,li b{color:var(--tinta)}
+.lead{font-size:11.5pt;color:var(--cuerpo)}
+.destacado{
+  font-size:13pt;font-weight:700;font-stretch:94%;line-height:1.35;
+  color:var(--tinta);letter-spacing:-.005em;
+  border-left:1mm solid var(--azul);padding-left:5mm;margin:6mm 0;
+}
+.destacado .c{color:var(--azulv)}
+
+.caja{
+  border:.4mm solid var(--linea);border-radius:2.5mm;
+  background:var(--panel);padding:5.5mm 6mm;
+}
+.callout{
+  border:.4mm solid rgba(167,139,250,.45);border-radius:2.5mm;
+  background:rgba(167,139,250,.08);padding:5mm 6mm;
+}
+.callout .t{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:7.5pt;letter-spacing:.2em;color:var(--violeta);
+  margin:0 0 2.5mm;font-weight:700;
+}
+.callout p{margin:0;font-size:10pt;color:var(--tinta)}
+
+ul.lista{margin:0;padding:0;list-style:none;display:grid;gap:2.6mm}
+ul.lista li{
+  font-size:10pt;color:var(--cuerpo);line-height:1.5;
+  padding-left:6mm;position:relative;
+}
+ul.lista li::before{
+  content:"";position:absolute;left:0;top:1.6mm;
+  width:2mm;height:2mm;border-radius:50%;
+  border:.5mm solid var(--azulv);
+}
+.chips{display:flex;flex-wrap:wrap;gap:2.2mm}
+.chips span{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:8pt;letter-spacing:.04em;
+  padding:1.8mm 3.2mm;border-radius:1.2mm;border:.35mm solid var(--linea-f);
+  color:var(--tinta);background:var(--panel);
+}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm}
+
+/* ===== portada ===== */
+.portada{
+  background:
+    radial-gradient(120mm 90mm at 72% 34%, rgba(59,108,246,.22), transparent 70%),
+    radial-gradient(90mm 70mm at 15% 85%, rgba(34,211,238,.1), transparent 65%),
+    #050A16;
+  display:flex;flex-direction:column;
+}
+.portada .marca{display:flex;align-items:center;gap:4mm}
+.portada .marca .nombre{font-size:17pt;font-weight:800;letter-spacing:.02em;line-height:1}
+.portada .marca .sub{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:6.5pt;letter-spacing:.42em;color:var(--muted);margin-top:1.6mm;font-weight:700;
+}
+.portada .centro{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative}
+.portada .cubo-zona{position:relative;height:118mm;margin:2mm 0 6mm}
+.portada .cubo-zona svg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.chip-est{
+  position:absolute;
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:7pt;letter-spacing:.06em;white-space:nowrap;
+  padding:1.6mm 3mm;border-radius:1mm;border:.35mm solid;
+}
+.chip-est.i{color:var(--cian);border-color:rgba(34,211,238,.5);background:rgba(34,211,238,.08)}
+.chip-est.c{color:var(--azulv);border-color:rgba(110,146,255,.55);background:rgba(59,108,246,.14)}
+.chip-est.o{color:var(--violeta);border-color:rgba(167,139,250,.55);background:rgba(167,139,250,.1)}
+.portada h1{
+  font-size:33pt;font-weight:800;font-stretch:90%;
+  letter-spacing:-.02em;line-height:1.02;margin:0 0 5mm;text-align:center;
+}
+.portada h1 em{
+  font-style:normal;
+  background:linear-gradient(92deg,var(--cian),var(--azulv) 55%,var(--violeta));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.portada .tag{
+  text-align:center;
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:8.5pt;letter-spacing:.2em;color:var(--muted);font-weight:700;
+}
+.portada .tag .c1{color:var(--cian)}.portada .tag .c2{color:var(--azulv)}.portada .tag .c3{color:var(--violeta)}
+.portada .base{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:8pt;letter-spacing:.16em;color:var(--muted);
+}
+
+/* ===== manifiesto ===== */
+.manifiesto p.grande{
+  font-size:14pt;line-height:1.5;color:var(--tinta);font-weight:500;
+}
+.pregunta-caja{
+  margin-top:8mm;border:.4mm solid rgba(34,211,238,.4);border-radius:2.5mm;
+  background:rgba(34,211,238,.06);padding:7mm 8mm;text-align:center;
+}
+.pregunta-caja .t{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:7.5pt;letter-spacing:.24em;color:var(--cian);margin:0 0 3mm;font-weight:700;
+}
+.pregunta-caja .q{
+  font-size:15pt;font-weight:800;font-stretch:93%;line-height:1.3;
+  color:var(--tinta);margin:0 0 2.5mm;
+}
+.pregunta-caja p{margin:0;color:var(--cuerpo)}
+
+/* ===== contenido ===== */
+.indice{display:grid;gap:0}
+.indice a{
+  display:flex;align-items:baseline;gap:4mm;text-decoration:none;
+  padding:3.4mm 0;border-bottom:.3mm solid var(--linea);
+}
+.indice .n{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:8.5pt;color:var(--cian);letter-spacing:.1em;width:12mm;flex:none;font-weight:700;
+}
+.indice .tt{font-size:11.5pt;font-weight:700;color:var(--tinta);font-stretch:94%}
+.indice .pg{
+  margin-left:auto;font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:8.5pt;color:var(--muted);
+}
+
+/* ===== vs ===== */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.vs .col{border:.4mm solid var(--linea);border-radius:2.5mm;background:var(--panel);padding:5mm 5.5mm}
+.vs .col.mejor{border-color:rgba(59,108,246,.55);background:linear-gradient(180deg,rgba(59,108,246,.12),var(--panel) 65%)}
+.vs h4{
+  margin:0 0 3.5mm;font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:8pt;letter-spacing:.18em;font-weight:700;
+}
+.vs .manual h4{color:var(--muted)}
+.vs .mejor h4{color:var(--azulv)}
+.vs ul{list-style:none;margin:0;padding:0;display:grid;gap:2.4mm}
+.vs li{font-size:9.3pt;line-height:1.45;color:var(--cuerpo);padding-left:5mm;position:relative}
+.vs .mejor li{color:var(--tinta)}
+.vs li::before{position:absolute;left:0;top:0;font-family:'Courier New',monospace;font-size:9pt;font-weight:700}
+.vs .manual li::before{content:"×";color:#F87171}
+.vs .mejor li::before{content:"✓";color:var(--ok)}
+
+/* ===== ecuación ===== */
+.ecu{display:flex;flex-wrap:wrap;align-items:center;gap:2mm;margin:5mm 0}
+.ecu span{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:8pt;letter-spacing:.08em;font-weight:700;
+  padding:2mm 3.4mm;border-radius:1.2mm;border:.35mm solid;
+}
+.ecu i{color:var(--muted);font-style:normal;font-size:9pt}
+.ecu .fi{color:var(--cian);border-color:rgba(34,211,238,.45);background:rgba(34,211,238,.07)}
+.ecu .fc{color:var(--azulv);border-color:rgba(110,146,255,.5);background:rgba(59,108,246,.12)}
+.ecu .fo{color:var(--violeta);border-color:rgba(167,139,250,.5);background:rgba(167,139,250,.09)}
+
+/* ===== motores ===== */
+.motores{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3.5mm}
+.motor{border:.4mm solid var(--linea);border-radius:2.5mm;background:var(--panel);padding:4.5mm 5mm}
+.motor .id{font-family:'Courier New',ui-monospace,Menlo,monospace;font-size:7pt;letter-spacing:.16em;color:var(--cian);font-weight:700}
+.motor h3{font-size:10.5pt;margin:2mm 0 1.6mm}
+.motor p{font-size:8.6pt;line-height:1.45;margin:0;color:var(--muted)}
+
+/* ===== fases ===== */
+.fases{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm}
+.fase{border:.4mm solid var(--linea);border-radius:2.5mm;background:var(--panel);padding:4.5mm 5mm}
+.fase .n{font-family:'Courier New',ui-monospace,Menlo,monospace;font-size:7pt;letter-spacing:.16em;color:var(--violeta);font-weight:700}
+.fase h3{font-size:11pt;margin:1.8mm 0 1.4mm}
+.fase p{font-size:8.8pt;line-height:1.45;margin:0;color:var(--muted)}
+
+/* ===== tabla ===== */
+table.tvs{border-collapse:collapse;width:100%;border:.4mm solid var(--linea);border-radius:2.5mm;overflow:hidden}
+.tvs th,.tvs td{padding:3.2mm 5mm;text-align:left;border-bottom:.3mm solid var(--linea);font-size:9.5pt}
+.tvs tr:last-child td{border-bottom:0}
+.tvs th{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:7.5pt;letter-spacing:.18em;font-weight:700;background:var(--panel);
+}
+.tvs th:first-child{color:var(--muted)}
+.tvs th:last-child{color:var(--azulv)}
+.tvs td:first-child{color:var(--muted)}
+.tvs td:last-child{color:var(--tinta);font-weight:500}
+.tvs{background:var(--panel)}
+
+/* ===== metrica ===== */
+.metrica{
+  border:.4mm solid rgba(34,211,238,.4);border-radius:2.5mm;
+  background:linear-gradient(135deg,rgba(34,211,238,.09),var(--panel) 60%);
+  padding:6mm 7mm;margin-bottom:5mm;
+}
+.metrica .t{font-family:'Courier New',ui-monospace,Menlo,monospace;font-size:7.5pt;letter-spacing:.22em;color:var(--cian);margin:0 0 2mm;font-weight:700}
+.metrica .big{font-size:22pt;font-weight:800;font-stretch:91%;letter-spacing:-.015em;margin:0 0 2.5mm;color:var(--tinta)}
+.metrica p{margin:0;font-size:9.8pt}
+
+/* ===== pasos numerados ===== */
+ol.pasos{margin:0;padding:0;list-style:none;display:grid;gap:2.8mm;counter-reset:p}
+ol.pasos li{
+  counter-increment:p;font-size:9.8pt;color:var(--cuerpo);line-height:1.5;
+  padding-left:9mm;position:relative;
+}
+ol.pasos li::before{
+  content:counter(p);position:absolute;left:0;top:.2mm;
+  width:5.6mm;height:5.6mm;border-radius:50%;
+  border:.4mm solid var(--azulv);color:var(--azulv);
+  font-family:'Courier New',ui-monospace,Menlo,monospace;font-size:8pt;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ===== casos ===== */
+.casos{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm}
+.caso{border:.4mm solid var(--linea);border-radius:2.5mm;background:var(--panel);padding:4.5mm 5.5mm}
+.caso h3{font-size:11pt;margin:0 0 1mm}
+.caso .g{font-size:8.6pt;color:var(--cian);margin:0 0 2mm;font-weight:600}
+.caso p{font-size:8.8pt;line-height:1.45;margin:0;color:var(--muted)}
+
+/* ===== sello / soluciones ===== */
+.sello{
+  display:inline-block;font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:9pt;letter-spacing:.3em;font-weight:700;color:var(--cian);
+  border:.4mm solid rgba(34,211,238,.5);background:rgba(34,211,238,.07);
+  padding:2.6mm 5mm;border-radius:1.2mm;margin-bottom:4mm;
+}
+.sols{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm}
+.sol{border:.4mm solid var(--linea);border-radius:2.5mm;background:var(--panel);padding:4mm 5mm}
+.sol .top{display:flex;align-items:center;gap:2.5mm;margin-bottom:1.6mm;flex-wrap:wrap}
+.sol h3{font-size:10.5pt;margin:0}
+.pill{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:6.5pt;letter-spacing:.08em;font-weight:700;
+  padding:1mm 2.6mm;border-radius:5mm;
+}
+.pill.ok{color:var(--ok);background:rgba(52,211,153,.14)}
+.pill.fase{color:#FBBF24;background:rgba(251,191,36,.14)}
+.pill.obra{color:var(--muted);background:rgba(131,149,184,.14);border:.3mm dashed var(--linea-f)}
+.sol p{font-size:8.6pt;line-height:1.45;margin:0;color:var(--muted)}
+
+/* ===== contraportada ===== */
+.contra{
+  background:
+    radial-gradient(110mm 80mm at 50% 30%, rgba(59,108,246,.2), transparent 70%),
+    #050A16;
+  display:flex;flex-direction:column;text-align:center;
+}
+.contra .centro{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.contra h2{font-size:27pt;max-width:150mm;margin:6mm auto 5mm}
+.contra .qq{
+  font-family:'Courier New',ui-monospace,Menlo,monospace;
+  font-size:8pt;letter-spacing:.22em;color:var(--violeta);font-weight:700;margin:0 0 2mm;
+}
+.contra p.pp{max-width:130mm;margin:0 auto 4mm;font-size:10.5pt}
+.contra .contacto{
+  margin-top:8mm;display:inline-block;
+  border:.4mm solid rgba(59,108,246,.55);border-radius:2mm;
+  background:rgba(59,108,246,.12);padding:4.5mm 10mm;
+  font-size:12pt;font-weight:800;color:var(--tinta);letter-spacing:.02em;
+}
+.contra .mail{margin-top:3mm;font-size:9pt;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- ========== 1 · PORTADA ========== -->
+<div class="page portada">
+  <div class="marca">
+    <svg width="34" height="34" viewBox="0 0 100 100">
+      <g stroke="#6E92FF" stroke-width="7"><line x1="22" y1="50" x2="72" y2="20"/><line x1="22" y1="50" x2="72" y2="80"/></g>
+      <g fill="#6E92FF"><circle cx="22" cy="50" r="15"/><circle cx="72" cy="20" r="15"/><circle cx="72" cy="80" r="15"/></g>
+    </svg>
+    <div><div class="nombre">DOOIF</div><div class="sub">DECISION&nbsp;SYSTEMS</div></div>
+  </div>
+  <div class="centro">
+    <div class="cubo-zona">
+      @@CUBE@@
+      <span class="chip-est i" style="left:4mm;top:22mm">Documento identificado</span>
+      <span class="chip-est i" style="left:1mm;top:58mm">Audio transcrito</span>
+      <span class="chip-est i" style="left:8mm;top:92mm">Imagen analizada</span>
+      <span class="chip-est c" style="left:64mm;top:6mm">Regla 018</span>
+      <span class="chip-est c" style="left:88mm;top:108mm">Validación cruzada · Scoring</span>
+      <span class="chip-est o" style="right:6mm;top:26mm">Cumple</span>
+      <span class="chip-est o" style="right:1mm;top:56mm">Riesgo bajo</span>
+      <span class="chip-est o" style="right:4mm;top:88mm">Decisión trazable</span>
+    </div>
+    <h1>Transformamos información<br>en <em>decisiones</em>.</h1>
+    <p class="tag"><span class="c1">DIFFERENT INPUTS.</span> <span class="c2">ONE INTELLIGENT CORE.</span> <span class="c3">BETTER DECISIONS.</span></p>
+  </div>
+  <div class="base">
+    <span>LIBRO DOOIF · EDICIÓN CLIENTES</span>
+    <span>WWW.DOOIF.CL</span>
+  </div>
+</div>
+
+<!-- ========== 2 · MANIFIESTO ========== -->
+<div class="page manifiesto">
+  <p class="eyebrow">MANIFIESTO DOOIF</p>
+  <h2>El valor no está en almacenar información. Está en decidir con ella.</h2>
+  <p class="grande">
+    Su organización genera documentos, imágenes, audios, conversaciones,
+    formularios, datos, registros y flujos — todos los días.
+  </p>
+  <p>
+    El valor no está únicamente en almacenar esa información, sino en
+    <b>comprenderla, aplicar conocimiento y convertirla en una decisión
+    consistente</b>. Ahí es donde su operación gana o pierde dinero: en cada
+    expediente que espera, en cada criterio que varía según quién lo aplique,
+    en cada error que nadie puede explicar.
+  </p>
+  <p>
+    Dooif desarrolla <b>motores de optimización y decisión</b> que capturan
+    conocimiento experto, estructuran reglas y generan resultados trazables.
+    No construimos un software distinto para cada trámite: construimos
+    <b>capacidades reutilizables</b> que se combinan para resolver múltiples
+    procesos.
+  </p>
+  <div class="destacado">
+    Diferentes entradas. Un mismo núcleo. <span class="c">Mejores decisiones.</span>
+  </div>
+  <div class="pregunta-caja">
+    <p class="t">LA PREGUNTA DOOIF</p>
+    <p class="q">¿Existe aquí una decisión que dependa de analizar información y aplicar conocimiento?</p>
+    <p>Si la respuesta es sí, probablemente existe un <b>Motor Dooif</b> que puede producirla mejor, más rápido y con evidencia.</p>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>02</b></span></div>
+</div>
+
+<!-- ========== 3 · CONTENIDO ========== -->
+<div class="page">
+  <p class="eyebrow">CONTENIDO</p>
+  <h2>Lo que este libro le va a mostrar</h2>
+  <p class="lead" style="margin-bottom:7mm">
+    Qué es un Motor Dooif, cuánto le cuesta hoy cada decisión que su
+    operación produce a mano — y el camino, paso a paso, para convertir el
+    conocimiento de su organización en capacidad que trabaja sola.
+  </p>
+  <div class="indice">
+    <a><span class="n">01</span><span class="tt">Su empresa decide. Eso cuesta.</span><span class="pg">04</span></a>
+    <a><span class="n">02</span><span class="tt">Qué es un Motor Dooif</span><span class="pg">05</span></a>
+    <a><span class="n">03</span><span class="tt">La ecuación y el Cubo Dooif</span><span class="pg">06</span></a>
+    <a><span class="n">04</span><span class="tt">Las nueve familias de motores</span><span class="pg">07</span></a>
+    <a><span class="n">05</span><span class="tt">Cómo se construye su solución</span><span class="pg">08</span></a>
+    <a><span class="n">06</span><span class="tt">El Método Dooif: de su experto al motor</span><span class="pg">09</span></a>
+    <a><span class="n">07</span><span class="tt">La Plataforma Dooif</span><span class="pg">10</span></a>
+    <a><span class="n">08</span><span class="tt">Economía de la decisión</span><span class="pg">11</span></a>
+    <a><span class="n">09</span><span class="tt">Cómo empezar: pequeño, medible, rentable</span><span class="pg">12</span></a>
+    <a><span class="n">10</span><span class="tt">Casos de aplicación</span><span class="pg">13</span></a>
+    <a><span class="n">11</span><span class="tt">Powered by Dooif</span><span class="pg">14</span></a>
+    <a><span class="n">12</span><span class="tt">Visión: una plataforma que aprende</span><span class="pg">15</span></a>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>03</b></span></div>
+</div>
+
+<!-- ========== 4 · CAP 1 PROBLEMA ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 01</p>
+  <h2>Su empresa decide miles de veces al día. ¿Sabe cuánto cuesta cada decisión?</h2>
+  <p>
+    Todas las organizaciones toman decisiones. Algunas aprueban solicitudes;
+    otras evalúan expedientes, riesgos, antecedentes médicos, comerciales,
+    técnicos o ambientales. Cambian las industrias y las reglas, pero el
+    patrón se repite: <b>recibir información → comprender → aplicar
+    conocimiento → evaluar → decidir</b>.
+  </p>
+  <p>
+    Durante décadas las empresas digitalizaron documentos y almacenaron
+    datos. El siguiente salto es digitalizar <b>la capacidad de interpretar y
+    decidir</b> — sin perder trazabilidad, consistencia ni control humano.
+  </p>
+  <div class="vs" style="margin:5mm 0">
+    <div class="col manual">
+      <h4>ASÍ OPERA HOY</h4>
+      <ul>
+        <li>El conocimiento crítico vive en personas y experiencia no estructurada</li>
+        <li>Dos analistas interpretan el mismo caso de forma distinta</li>
+        <li>Los errores son difíciles de localizar y explicar</li>
+        <li>La capacidad depende de horas humanas disponibles</li>
+        <li>Cuando una persona se va, parte del conocimiento desaparece</li>
+        <li>El proceso no conoce su costo real por decisión</li>
+      </ul>
+    </div>
+    <div class="col mejor">
+      <h4>ASÍ OPERA CON DOOIF</h4>
+      <ul>
+        <li>El conocimiento queda capturado, versionado y dentro de su organización</li>
+        <li>Mismo caso, misma regla, misma decisión — siempre</li>
+        <li>Cada resultado registra su evidencia y su porqué</li>
+        <li>La capacidad escala sin contratar</li>
+        <li>El experto multiplica su alcance en vez de ser cuello de botella</li>
+        <li>El costo por decisión se mide — y baja</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout">
+    <p class="t">QUÉ SIGNIFICA PARA USTED</p>
+    <p>Más volumen procesado con el mismo equipo, menos errores que explicar,
+    y un proceso que ya no depende de que "la persona que sabe" esté
+    disponible. Eso es dinero: capacidad sin contratación y riesgo sin sustos.</p>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>04</b></span></div>
+</div>
+
+<!-- ========== 5 · CAP 2 MOTOR ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 02</p>
+  <h2>Qué es un Motor Dooif</h2>
+  <p class="lead">
+    Un Motor Dooif es una capacidad digital que <b>recibe información, la
+    comprende, aplica conocimiento experto y reglas, y genera un resultado
+    trazable</b>. No es un chatbot. No es "IA generativa". Es su proceso de
+    decisión, digitalizado.
+  </p>
+  <div class="grid2" style="margin:5mm 0">
+    <div class="caja">
+      <h3 style="color:var(--cian)">Lo que entra</h3>
+      <ul class="lista">
+        <li>Documentos y expedientes</li>
+        <li>Imágenes y evidencia visual</li>
+        <li>Audio, entrevistas y conversaciones</li>
+        <li>Video y formularios</li>
+        <li>Bases de datos y APIs institucionales</li>
+        <li>Registros históricos y señales operacionales</li>
+      </ul>
+    </div>
+    <div class="caja">
+      <h3 style="color:var(--violeta)">Lo que sale</h3>
+      <ul class="lista">
+        <li>Clasificación · Validación · Evaluación</li>
+        <li>Scoring · Alerta · Observación</li>
+        <li>Recomendación</li>
+        <li>Propuesta técnica o comercial</li>
+        <li>Propuesta de resolución</li>
+        <li>Decisión dentro de márgenes autorizados</li>
+      </ul>
+    </div>
+  </div>
+  <div class="destacado">
+    El producto no es el trámite. El producto es
+    <span class="c">la capacidad de procesar y decidir</span> que existe
+    detrás del trámite.
+  </div>
+  <p>
+    Por eso un mismo motor sirve para evaluar una licencia médica, un
+    siniestro, un expediente municipal o un proveedor: lo que cambia son los
+    documentos y las reglas; <b>la capacidad de fondo es la misma</b>. Usted
+    no paga por construirla desde cero — paga por configurarla para su
+    proceso.
+  </p>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>05</b></span></div>
+</div>
+
+<!-- ========== 6 · CAP 3 ECUACIÓN + CUBO ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 03</p>
+  <h2>La ecuación y el Cubo Dooif</h2>
+  <p>
+    Toda solución Dooif ejecuta la misma secuencia. Las variables cambian
+    entre clientes e industrias; <b>la arquitectura esencial permanece</b>.
+    Esta repetibilidad es lo que nos permite escalar por configuración — y a
+    usted, implementar en semanas lo que antes tomaba años de desarrollo.
+  </p>
+  <div class="ecu">
+    <span class="fi">INFORMACIÓN</span><i>→</i>
+    <span class="fi">COMPRENSIÓN</span><i>→</i>
+    <span class="fc">CONOCIMIENTO</span><i>→</i>
+    <span class="fc">REGLAS</span><i>→</i>
+    <span class="fc">EVALUACIÓN</span><i>→</i>
+    <span class="fo">PROPUESTA</span><i>→</i>
+    <span class="fo">DECISIÓN</span><i>→</i>
+    <span class="fo">TRAZABILIDAD</span><i>→</i>
+    <span class="fo">APRENDIZAJE</span>
+  </div>
+  <div style="position:relative;height:96mm;margin:3mm 0">
+    @@CUBE2@@
+    <span class="chip-est i" style="left:2mm;top:18mm">Entradas: documentos, audio, imágenes, datos</span>
+    <span class="chip-est c" style="left:56mm;top:88mm">Núcleo: reglas · evaluación · scoring · trazabilidad</span>
+    <span class="chip-est o" style="right:2mm;top:22mm">Salidas: cumple · aprobado · riesgo · calificación</span>
+  </div>
+  <p>
+    El Cubo es el núcleo conceptual de Dooif: un motor que recibe información
+    heterogénea por distintos lados, la procesa mediante conocimiento y
+    reglas, y entrega resultados estructurados. <b>Diferentes entradas. Un
+    mismo núcleo. Resultados consistentes.</b>
+  </p>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>06</b></span></div>
+</div>
+
+<!-- ========== 7 · CAP 4 FAMILIAS ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 04</p>
+  <h2>Las nueve familias de motores</h2>
+  <p style="margin-bottom:5mm">
+    Nueve capacidades que se combinan como piezas. Cada una ya está
+    construida — su proyecto las configura, no las inventa.
+  </p>
+  <div class="motores">
+    <div class="motor"><span class="id">ENGINE·01</span><h3>Document Intelligence</h3><p>Comprende, clasifica, extrae y valida información de documentos y expedientes.</p></div>
+    <div class="motor"><span class="id">ENGINE·02</span><h3>Vision Intelligence</h3><p>Convierte imágenes y evidencia visual en variables utilizables.</p></div>
+    <div class="motor"><span class="id">ENGINE·03</span><h3>Voice Intelligence</h3><p>Transcribe, interpreta y estructura entrevistas, audios y conversaciones.</p></div>
+    <div class="motor"><span class="id">ENGINE·04</span><h3>Data Intelligence</h3><p>Integra bases de datos, APIs, registros y fuentes externas.</p></div>
+    <div class="motor"><span class="id">ENGINE·05</span><h3>Evaluation Engine</h3><p>Digitaliza instrumentos de evaluación, ponderaciones, umbrales y criterios.</p></div>
+    <div class="motor"><span class="id">ENGINE·06</span><h3>Rules Engine</h3><p>Convierte normativa, procedimientos y conocimiento experto en reglas ejecutables.</p></div>
+    <div class="motor"><span class="id">ENGINE·07</span><h3>Decision Engine</h3><p>Construye propuestas de decisión explicables y respaldadas por evidencia.</p></div>
+    <div class="motor"><span class="id">ENGINE·08</span><h3>Process Intelligence</h3><p>Orquesta motores, personas, excepciones, sistemas y etapas del flujo.</p></div>
+    <div class="motor"><span class="id">ENGINE·09</span><h3>Audit &amp; Traceability</h3><p>Registra qué ocurrió, por qué ocurrió y qué versión del conocimiento se utilizó.</p></div>
+  </div>
+  <div class="callout" style="margin-top:5mm">
+    <p class="t">QUÉ SIGNIFICA PARA USTED</p>
+    <p>Su solución no parte de cero: parte del noveno piso. Cada motor ya fue
+    probado en operación real, y cada nuevo cliente lo deja más afinado para
+    el siguiente.</p>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>07</b></span></div>
+</div>
+
+<!-- ========== 8 · CAP 5 SOLUCIÓN ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 05</p>
+  <h2>Cómo se construye su solución</h2>
+  <p class="lead">
+    Una solución Dooif es una <b>combinación de motores y configuraciones</b>.
+    Usted compra un resultado operacional; Dooif compone internamente las
+    capacidades necesarias.
+  </p>
+  <div class="caja" style="margin:5mm 0">
+    <p class="t mono" style="font-size:7.5pt;letter-spacing:.2em;color:var(--muted);margin:0 0 3mm">EJEMPLO · EVALUACIÓN DE EXPEDIENTES</p>
+    <div class="ecu" style="margin:0">
+      <span class="fc">Document</span><i>+</i>
+      <span class="fc">Data</span><i>+</i>
+      <span class="fc">Rules</span><i>+</i>
+      <span class="fc">Evaluation</span><i>+</i>
+      <span class="fc">Decision</span><i>+</i>
+      <span class="fc">Audit</span><i>=</i>
+      <span class="fo">Expedientes evaluados con evidencia</span>
+    </div>
+  </div>
+  <p>
+    La misma composición, con otras reglas y otros documentos, evalúa
+    siniestros en seguros, antecedentes en salud, beneficios en gobierno o
+    proveedores en una empresa. <b>Cada nuevo proyecto enriquece la
+    biblioteca común de motores y reduce el tiempo de implementación del
+    siguiente.</b>
+  </p>
+  <div class="destacado">
+    Configurar antes que reconstruir.<br>
+    Reutilizar antes que duplicar.<br>
+    <span class="c">Medir antes que prometer.</span>
+  </div>
+  <div class="callout">
+    <p class="t">QUÉ SIGNIFICA PARA USTED</p>
+    <p>Plazos cortos y costo contenido: usted no financia el desarrollo de un
+    software completo, financia la configuración de capacidades que ya
+    existen y ya operan.</p>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>08</b></span></div>
+</div>
+
+<!-- ========== 9 · CAP 6 MÉTODO ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 06</p>
+  <h2>El Método Dooif: de su experto al motor</h2>
+  <p style="margin-bottom:4.5mm">
+    La ventaja de Dooif no es solo la tecnología. Es la <b>metodología para
+    convertir conocimiento humano en capacidad digital</b> — ocho fases, con
+    su equipo adentro y midiendo desde el primer día.
+  </p>
+  <div class="fases">
+    <div class="fase"><span class="n">FASE·1</span><h3>Descubrir</h3><p>Identificamos procesos donde existen información, conocimiento, repetición y decisiones.</p></div>
+    <div class="fase"><span class="n">FASE·2</span><h3>Levantar</h3><p>Mapeamos flujos, actores, documentos, datos, sistemas, criterios, reglas y excepciones.</p></div>
+    <div class="fase"><span class="n">FASE·3</span><h3>Estructurar</h3><p>Convertimos conocimiento tácito en variables, evidencia, criterios e instrumentos ejecutables.</p></div>
+    <div class="fase"><span class="n">FASE·4</span><h3>Diseñar</h3><p>Seleccionamos motores y definimos la arquitectura funcional de la solución.</p></div>
+    <div class="fase"><span class="n">FASE·5</span><h3>Configurar</h3><p>Parametrizamos documentos, reglas, integraciones, usuarios, permisos y resultados.</p></div>
+    <div class="fase"><span class="n">FASE·6</span><h3>Validar</h3><p>Probamos con casos reales y medimos tiempo, consistencia, error, costo y trazabilidad.</p></div>
+    <div class="fase"><span class="n">FASE·7</span><h3>Operar</h3><p>El motor entra en producción y comienza a generar resultados reales.</p></div>
+    <div class="fase"><span class="n">FASE·8</span><h3>Aprender</h3><p>Las excepciones, discrepancias y nuevos criterios alimentan la evolución del motor.</p></div>
+  </div>
+  <div class="callout" style="margin-top:5mm">
+    <p class="t">QUÉ SIGNIFICA PARA USTED</p>
+    <p>Sus expertos no son reemplazados: son entrevistados, modelados y
+    multiplicados. El criterio de su mejor analista pasa a aplicarse en cada
+    caso, a cualquier hora, sin variación.</p>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>09</b></span></div>
+</div>
+
+<!-- ========== 10 · CAP 7 PLATAFORMA ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 07</p>
+  <h2>La Plataforma Dooif</h2>
+  <p class="lead">
+    Todos los productos heredan una base tecnológica común, en la nube. El
+    objetivo es simple: que ningún proyecto — el suyo incluido — vuelva a
+    pagar por resolver los mismos problemas de software empresarial.
+  </p>
+  <div class="chips" style="margin:5mm 0">
+    <span>multiusuario · multiempresa</span>
+    <span>roles, permisos y autenticación</span>
+    <span>seguridad y segregación de datos</span>
+    <span>auditoría y trazabilidad</span>
+    <span>APIs e integraciones</span>
+    <span>versionamiento de reglas e instrumentos</span>
+    <span>gestión de casos y excepciones</span>
+    <span>monitoreo, observabilidad y métricas</span>
+    <span>administración y configuración</span>
+    <span>gestión de errores</span>
+    <span>escalabilidad en nube</span>
+    <span>estándar común de experiencia</span>
+  </div>
+  <p>
+    Esto importa más de lo que parece: la mayoría de los proyectos de
+    "inteligencia artificial" fracasan no por el modelo, sino por todo lo que
+    lo rodea — permisos, auditoría, integraciones, manejo de excepciones.
+    En Dooif eso ya está resuelto, operando y vigilado.
+  </p>
+  <div class="destacado">
+    Su proyecto no paga por reinventar la base.<br>
+    Paga por <span class="c">el conocimiento que se monta sobre ella</span>.
+  </div>
+  <div class="callout">
+    <p class="t">QUÉ SIGNIFICA PARA USTED</p>
+    <p>Seguridad y cumplimiento de clase empresarial desde el día uno, sin
+    infraestructura propia que mantener, y con la certeza de que cada mejora
+    de la plataforma le llega sin costo adicional.</p>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>10</b></span></div>
+</div>
+
+<!-- ========== 11 · CAP 8 ECONOMÍA ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 08</p>
+  <h2>Economía de la decisión</h2>
+  <div class="metrica">
+    <p class="t">LA MÉTRICA QUE CAMBIA LA CONVERSACIÓN</p>
+    <p class="big">Costo por decisión</p>
+    <p>
+      Usted conoce sus costos de personal y de tecnología. ¿Pero cuánto
+      cuesta producir <b>una</b> decisión — sumando horas humanas,
+      supervisión, reprocesos, errores, infraestructura, excepciones y
+      tiempos de espera? La mayoría de los procesos no lo sabe. Dooif lo
+      mide, lo transparenta y lo reduce.
+    </p>
+  </div>
+  <table class="tvs">
+    <thead><tr><th>ANTES</th><th>CON DOOIF</th></tr></thead>
+    <tbody>
+      <tr><td>Procesamiento manual</td><td>Automatización asistida</td></tr>
+      <tr><td>Alta variabilidad</td><td>Consistencia</td></tr>
+      <tr><td>Tiempos extensos</td><td>Tiempos reducidos</td></tr>
+      <tr><td>Errores difíciles de localizar</td><td>Trazabilidad completa</td></tr>
+      <tr><td>Capacidad limitada</td><td>Escalabilidad</td></tr>
+      <tr><td>Costos ocultos</td><td>Ahorro medible</td></tr>
+    </tbody>
+  </table>
+  <div class="callout" style="margin-top:5mm">
+    <p class="t">QUÉ SIGNIFICA PARA USTED</p>
+    <p>Cuando el costo por decisión baja, pasan dos cosas: puede procesar más
+    con lo mismo (crecer sin contratar) y puede competir con precios que su
+    operación manual no soportaría. Las dos son utilidad directa.</p>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>11</b></span></div>
+</div>
+
+<!-- ========== 12 · CAP 9 CÓMO EMPEZAR ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 09</p>
+  <h2>Cómo empezar: pequeño, medible, rentable</h2>
+  <p class="lead">
+    No le pedimos un acto de fe ni un contrato gigante. Le proponemos un
+    camino de entrada diseñado para que <b>los números decidan</b>:
+  </p>
+  <ol class="pasos" style="margin:5mm 0">
+    <li><b>Diagnóstico del proceso.</b> Levantamos dónde se analiza información y se decide, y cuánto cuesta hoy.</li>
+    <li><b>Un caso de uso acotado y medible.</b> Ni toda la empresa ni todo el flujo: el punto de mayor dolor.</li>
+    <li><b>Piloto con casos reales.</b> Sus expedientes, sus reglas, su gente.</li>
+    <li><b>Comparación Humano vs. Humano + Dooif.</b> Tiempo, consistencia, error y costo, lado a lado.</li>
+    <li><b>Impacto económico y operacional en números.</b> Si no conviene, ahí termina — usted se queda con el diagnóstico.</li>
+    <li><b>Escalamiento a producción.</b> Con el caso probado, el motor crece al resto del proceso.</li>
+  </ol>
+  <div class="caja">
+    <h3>Pague por resultado, no por licencias</h3>
+    <p style="margin:0">
+      Validado el proceso, el precio se expresa <b>por expediente, evaluación,
+      transacción o decisión</b>. La implementación inicial puede reducirse
+      cuando existe una oportunidad clara de volumen y recurrencia.
+      <b>Dooif gana cuando usted procesa más, decide mejor y reduce su costo
+      operacional</b> — nuestro incentivo es su eficiencia.
+    </p>
+  </div>
+  <div class="destacado" style="margin-bottom:0">
+    La conversación comercial empieza con una sola pregunta:<br>
+    <span class="c">¿Cuánto le cuesta hoy producir esta decisión?</span>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>12</b></span></div>
+</div>
+
+<!-- ========== 13 · CAP 10 CASOS ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 10</p>
+  <h2>Casos de aplicación</h2>
+  <p style="margin-bottom:4.5mm">
+    Cambian las industrias y las reglas. El patrón — y el motor — se repite.
+  </p>
+  <div class="casos">
+    <div class="caso"><h3>Salud</h3><p class="g">Más casos resueltos por jornada, criterio uniforme.</p><p>Licencias, segunda opinión, calificación, antecedentes médicos, entrevistas y validaciones.</p></div>
+    <div class="caso"><h3>Gobierno</h3><p class="g">Trámites en horas, con resolución fundada y trazable.</p><p>Permisos, patentes, expedientes, beneficios, fiscalización y propuestas de resolución.</p></div>
+    <div class="caso"><h3>Educación</h3><p class="g">Evaluación masiva sin sacrificar el criterio experto.</p><p>Antecedentes estudiantiles, evaluaciones, documentación, seguimiento e intervenciones.</p></div>
+    <div class="caso"><h3>Seguros</h3><p class="g">Siniestros liquidados más rápido, fraude detectado antes.</p><p>Siniestros, suscripción, evaluación de riesgo, fraude y verificación documental.</p></div>
+    <div class="caso"><h3>Medio ambiente</h3><p class="g">Evidencia técnica procesada al ritmo de la operación.</p><p>Informes, imágenes, inspecciones, mediciones, normativa y evaluación técnica.</p></div>
+    <div class="caso"><h3>Empresas</h3><p class="g">Decisiones de negocio con respaldo, a escala.</p><p>Compliance, auditoría, proveedores, recursos humanos, scoring y evaluación comercial.</p></div>
+  </div>
+  <div class="destacado" style="margin-top:5.5mm;margin-bottom:0">
+    Distintos problemas. <span class="c">El mismo núcleo Dooif.</span>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>13</b></span></div>
+</div>
+
+<!-- ========== 14 · CAP 11 POWERED ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 11</p>
+  <h2>Powered by Dooif</h2>
+  <p>
+    Cada solución construida sobre la plataforma lleva el sello. Puede tener
+    un nombre vertical o pertenecer a una industria distinta, pero si utiliza
+    la arquitectura, los motores y la metodología de Dooif, lo lleva — y eso
+    le garantiza a usted lo mismo que a todos:
+  </p>
+  <div style="margin:4mm 0"><span class="sello">POWERED BY DOOIF</span></div>
+  <div class="chips" style="margin-bottom:5mm">
+    <span>misma arquitectura base</span>
+    <span>estándares comunes de seguridad y operación</span>
+    <span>trazabilidad y auditoría</span>
+    <span>versionamiento del conocimiento</span>
+    <span>calidad y consistencia</span>
+    <span>capacidad de integración</span>
+    <span>evolución continua</span>
+  </div>
+  <h3 style="margin-bottom:3mm">Ya operando sobre la plataforma</h3>
+  <div class="sols">
+    <div class="sol"><div class="top"><h3>Sinergia</h3><span class="pill ok">EN PRODUCCIÓN</span></div><p>Plataforma comercial para pymes: prospección, cotizaciones, seguimiento multicanal, agenda, cobros y marca blanca.</p></div>
+    <div class="sol"><div class="top"><h3>Agentes de Voz</h3><span class="pill ok">EN PRODUCCIÓN</span></div><p>Agentes que contestan y hacen llamadas reales con voz natural, y entregan transcripción y análisis estructurado.</p></div>
+    <div class="sol"><div class="top"><h3>Contactabilidad</h3><span class="pill ok">ACTIVO</span></div><p>Contacto masivo y gestiones: marcado automático, captura de datos y cierre de trámites con respaldo completo.</p></div>
+    <div class="sol"><div class="top"><h3>Atención Ciudadana</h3><span class="pill fase">MUNICIPIOS</span></div><p>Vecinos atendidos 24/7 por teléfono, WhatsApp y chat, con información oficial y casos derivados con registro.</p></div>
+    <div class="sol"><div class="top"><h3>Licitaciones</h3><span class="pill obra">EN CONSTRUCCIÓN</span></div><p>Monitoreo de compra pública, lectura de bases y match entre requisitos y capacidades reales de su empresa.</p></div>
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>14</b></span></div>
+</div>
+
+<!-- ========== 15 · CAP 12 VISIÓN ========== -->
+<div class="page">
+  <p class="eyebrow">CAPÍTULO 12</p>
+  <h2>Visión: una plataforma que aprende de cada cliente</h2>
+  <p class="lead">
+    Dooif no busca desarrollar cientos de aplicaciones desconectadas. Busca
+    construir una <b>biblioteca creciente de capacidades reutilizables</b> de
+    comprensión, evaluación, decisión y operación.
+  </p>
+  <div class="caja" style="margin:5mm 0">
+    <h3>Reglas de escalamiento</h3>
+    <ul class="lista">
+      <li>Cada motor desarrollado debe ser reutilizable.</li>
+      <li>Cada integración queda disponible para futuros productos.</li>
+      <li>Cada nuevo instrumento enriquece la biblioteca de conocimiento.</li>
+      <li>Cada excepción se convierte en aprendizaje.</li>
+      <li>Cada proyecto reduce el tiempo de construcción del siguiente.</li>
+    </ul>
+  </div>
+  <p>
+    Para usted esto tiene una consecuencia directa: <b>la plataforma que
+    contrata hoy será más capaz el próximo mes, sin que usted pague ese
+    desarrollo</b>. Cada cliente hace mejor el producto de todos.
+  </p>
+  <div class="destacado">
+    Categoría: <span class="c">DOOIF DECISION SYSTEMS</span><br>
+    Sistemas diseñados para convertir información y conocimiento en
+    decisiones operacionales trazables.
+  </div>
+  <div class="pie"><span>DOOIF · LIBRO</span><span><b>15</b></span></div>
+</div>
+
+<!-- ========== 16 · CONTRAPORTADA ========== -->
+<div class="page contra">
+  <div class="centro">
+    <svg width="46" height="46" viewBox="0 0 100 100">
+      <g stroke="#6E92FF" stroke-width="7"><line x1="22" y1="50" x2="72" y2="20"/><line x1="22" y1="50" x2="72" y2="80"/></g>
+      <g fill="#6E92FF"><circle cx="22" cy="50" r="15"/><circle cx="72" cy="20" r="15"/><circle cx="72" cy="80" r="15"/></g>
+    </svg>
+    <h2>La promesa Dooif</h2>
+    <p class="pp">
+      Comprendemos información. Aplicamos conocimiento. Generamos resultados.
+      Registramos evidencia. Aprendemos de cada caso. <b>Escalamos la
+      capacidad de decisión de su organización.</b>
+    </p>
+    <p class="qq">EMPECEMOS POR UNA PREGUNTA</p>
+    <p class="pp" style="font-size:14pt;font-weight:800;color:var(--tinta)">
+      ¿Cuánto le cuesta hoy producir esta decisión?
+    </p>
+    <div class="contacto">WWW.DOOIF.CL</div>
+    <p class="mail">planificacioneesingenieria@gmail.com · Chile</p>
+  </div>
+  <div class="base" style="display:flex;justify-content:space-between;font-family:'Courier New',ui-monospace,Menlo,monospace;font-size:8pt;letter-spacing:.16em;color:var(--muted)">
+    <span>DIFFERENT INPUTS. ONE INTELLIGENT CORE. BETTER DECISIONS.</span>
+    <span>POWERED BY DOOIF</span>
+  </div>
+</div>
+
+</body>
+</html>
