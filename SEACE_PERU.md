@@ -111,6 +111,113 @@ Diez minutos de trabajo que definen la arquitectura completa de la fase 2.
 
 ---
 
+## Adjudicaciones del día, ganadores y documentación de la oferta
+
+Tres preguntas distintas, con tres respuestas distintas: la primera es fácil, la
+segunda es el punto más fuerte del SEACE, y la tercera es la única que tiene un
+"depende" real.
+
+### a) El Excel de procedimientos vigentes, automatizado
+
+El buscador público exporta a Excel los resultados de la búsqueda; es la
+descarga manual que ya conocen. Automatizarla tiene tres caminos, en orden de
+preferencia:
+
+1. **No automatizarla.** El dataset CONOSCE de *procedimientos convocados* y el
+   *release* OCDS entregan lo mismo en CSV/JSON estructurado, sin captcha y sin
+   navegador. Cuesta un día de trabajo y no se rompe. La contra es la latencia
+   de ~1 día.
+2. **Servicios del buscador nuevo** (`prod6`), si expone JSON — pendiente de
+   verificar, pero es el camino limpio para el mismo día.
+3. **Replicar el POST del buscador clásico**, que exige mantener el `ViewState`
+   de JSF y resolver el captcha. Es el último recurso.
+
+Nota importante: el Excel del buscador es **la lista, no las bases**. Trae la
+cabecera del procedimiento (entidad, objeto, nomenclatura, fechas, valor
+referencial, estado); los documentos siguen estando uno a uno en cada ficha.
+
+### b) Identificar las adjudicadas del día y quién ganó — sí, y bien
+
+Esto está resuelto por norma, no por suerte: **el otorgamiento de la buena pro se
+publica en el SEACE el mismo día de su realización**, y la publicación debe ir
+acompañada del **acta de otorgamiento de la buena pro** y del **cuadro
+comparativo**, con los documentos que sustentan los resultados de calificación y
+evaluación de los postores.
+
+Fuentes para capturarlo, según la latencia que se necesite:
+
+| Vía | Latencia | Qué entrega |
+|---|---|---|
+| Buscador público, filtrando por fecha y estado | Mismo día | Ficha, acta, cuadro comparativo |
+| **Buscador de Proveedores Adjudicados** | Mismo día / muy baja | Adjudicaciones por RUC o DNI **desde 2008**, individuales y en consorcio, incluidas órdenes de compra y servicio hasta 8 UIT. Exporta Excel |
+| CONOSCE: *procedimientos adjudicados* y *proveedores adjudicados* | ~1 día | Dataset completo, ideal para carga masiva |
+| OCDS: bloque `awards` con `suppliers` | ~1 día | Adjudicación normalizada, lista para el esquema único |
+
+**El cuadro comparativo es el activo que Chile no da con esta facilidad.** No
+dice sólo quién ganó: dice **cuánto ofertó cada postor** y qué puntaje obtuvo.
+Con eso, sobre el histórico, se construye algo que vale por sí solo como
+producto:
+
+- a qué porcentaje del valor referencial gana cada competidor, por rubro y por
+  entidad;
+- quién compite realmente contra el cliente y en qué tipos de procedimiento;
+- qué entidades tienen un único postor recurrente;
+- cuál es el precio de corte esperable para un procedimiento nuevo.
+
+Eso es **inteligencia de precios para preparar la oferta**, no sólo alertas. Es
+la funcionalidad que justifica el proyecto peruano por encima de "avisar de
+licitaciones".
+
+### c) Extraer la documentación de la oferta del ganador — con matices
+
+Hay que separar tres capas, porque tienen garantías legales distintas:
+
+| Capa | ¿Público? | Comentario |
+|---|---|---|
+| Acta de buena pro y cuadro comparativo | **Sí, por norma, el mismo día** | Montos y puntajes por postor |
+| Documentos que sustentan calificación y evaluación | **Sí, por norma** | Acompañan la publicación de la buena pro |
+| Oferta completa del ganador (propuesta técnica con anexos, certificados, detalle económico) | **Depende** | Existe en digital — en los procedimientos electrónicos la oferta se presenta por la plataforma — pero su publicación al público hay que confirmarla ficha por ficha |
+| Ofertas de los perdedores | Normalmente no | Salvo lo que aparezca en el cuadro comparativo |
+
+Dos límites que hay que asumir de entrada: la **información confidencial**
+(secreto comercial o tecnológico que el postor justifique) y los **datos
+personales** no se publican, así que ninguna oferta va a estar íntegra y sin
+tachas.
+
+Y una vía adicional que conviene probar antes que cualquier otra cosa: **el
+contrato suscrito sí se registra en el SEACE** y tiene su propio buscador
+(`prod4.seace.gob.pe/contratos/publico/`, con endpoints de descarga directa de
+archivo del tipo `.../descargar-archivo-contrato/{id}` en la plataforma nueva,
+que responden sin autenticación). Los contratos suelen incorporar la oferta
+ganadora como anexo. **[verificar]** si en la práctica esos anexos vienen
+adjuntos: si la respuesta es sí, el problema de la capa 3 queda resuelto por una
+puerta lateral, y además abierta y sin captcha.
+
+Si aun así falta la oferta de un procedimiento concreto y de verdad se necesita,
+queda el canal formal: **solicitud de acceso a la información pública** a la
+Entidad (Ley 27806). El expediente de contratación es público salvo lo
+confidencial, y hay plazo legal de respuesta. Sirve para casos puntuales de alto
+valor; no es automatizable a escala y no debe estar en el camino crítico del
+producto.
+
+### Verificación empírica pendiente (15 minutos, alto valor)
+
+Abrir 4 o 5 fichas de procedimientos **con buena pro reciente**, de tipos
+distintos (licitación pública, concurso público, adjudicación simplificada,
+subasta inversa electrónica), y anotar para cada una:
+
+1. qué tipos de documento aparecen listados y descargables;
+2. si está el cuadro comparativo con montos por postor;
+3. si aparece la oferta del ganador y en qué formato;
+4. si el contrato publicado trae la oferta como anexo;
+5. si la descarga de cada documento tiene URL directa estable (con id) o exige
+   sesión y captcha.
+
+Con esa tabla en la mano, el alcance de la fase 3 deja de ser una estimación y
+pasa a ser un hecho.
+
+---
+
 ## El marco legal cambió, y eso es el riesgo principal
 
 - La **Ley 32069** (Ley General de Contrataciones Públicas) rige desde el
@@ -218,6 +325,12 @@ gastar un día en las DevTools del buscador nuevo: si expone JSON, Perú termina
 siendo **más fácil de integrar que Chile**; si no, se entra con la latencia de un
 día y el scraping queda como upgrade vendible aparte.
 
+Y un ajuste de foco respecto del planteamiento original: en Perú el producto no
+debería venderse sólo como *alerta de licitaciones*. Con el cuadro comparativo y
+las adjudicaciones desde 2008, lo vendible es **con cuánto hay que entrar para
+ganar**, quién compite y a qué descuento gana. La alerta es la puerta de entrada;
+la inteligencia de precios es lo que se paga.
+
 ---
 
 ## Fuentes
@@ -234,3 +347,10 @@ día y el scraping queda como upgrade vendible aparte.
 - [Ley 32069, Ley General de Contrataciones Públicas (actualizada)](https://lpderecho.pe/ley-general-de-contrataciones-publicas-actualizada/)
 - [¿Qué es el PLADICOP? — LP Derecho](https://lpderecho.pe/contrataciones-estado-pladicop/)
 - [SEACE y PLADICOP bajo la Ley 32069 — CEPEG](https://cepeg.pe/blog/curso-seace-pladicop-ley-32069/)
+- [Consultar los buscadores públicos del SEACE — gob.pe](https://www.gob.pe/7505-consultar-los-buscadores-publicos-del-sistema-electronico-de-contrataciones-del-estado-seace)
+- [Acceder al Buscador de Proveedores Adjudicados — gob.pe](https://www.gob.pe/14273-acceder-al-buscador-de-proveedores-adjudicados)
+- [Buscador de Proveedores del Estado](https://apps.osce.gob.pe/perfilprov-ui/buscar)
+- [SEACE — Buscador de Contratos](https://prod4.seace.gob.pe/contratos/publico/)
+- [Directiva N.° 007-2025-OECE-CD, registro de información en el SEACE](https://www.gob.pe/institucion/oece/normas-legales/6682412-007-2025-oece-cd)
+- [Reglamento de la Ley 32069 (DS 009-2025-EF), por artículos](https://simuladoroece.org/reglamento-ley-32069/)
+- [Otorgamiento de la buena pro bajo la Ley 32069 — Perucontrata](https://www.perucontrata.com.pe/ley-reglamento-contrataciones/otorgamiento-buena-pro/)

@@ -44,6 +44,12 @@ FUENTES = [
      "https://prodapp2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml"),
     ("SEACE nuevo (Ley 32069)", "https://prod6.seace.gob.pe/buscador-publico"),
     ("SEACE contratos",         "https://prod4.seace.gob.pe/contratos/publico/"),
+    ("Buscador proveedores adjud.",
+     "https://www.gob.pe/14273-acceder-al-buscador-de-proveedores-adjudicados"),
+    ("Perfil de proveedor",     "https://apps.osce.gob.pe/perfilprov-ui/buscar"),
+    ("Descarga directa de archivo de contrato (muestra)",
+     "https://prod6.seace.gob.pe/v1/s8uit-services/archivo/archivos-publico"
+     "/descargar-archivo-contrato/139622"),
     ("OCP Data Registry",       "https://data.open-contracting.org/en/publication/135"),
 ]
 
@@ -57,6 +63,7 @@ PISTAS = [
     ("recordPackage",         "record package OCDS"),
     ("<app-root",             "SPA Angular: la busqueda va por XHR a un servicio JSON"),
     ("main.js",               "SPA con bundle JS: revisar los XHR en DevTools"),
+    ("%PDF",                  "responde un PDF: descarga directa sin sesion ni captcha"),
 ]
 
 
@@ -98,10 +105,14 @@ def main():
     print("Sondeando fuentes de compra publica del Peru\n")
     vivos = sum(sondear(n, u, args.guardar) for n, u in FUENTES)
     print(f"\n{vivos}/{len(FUENTES)} fuentes respondieron.")
-    print("\nSiguiente paso manual (10 min, define la arquitectura de tiempo real):")
-    print("  abrir https://prod6.seace.gob.pe/buscador-publico con DevTools > Network,")
-    print("  hacer una busqueda y anotar: URL del servicio, metodo, filtros,")
-    print("  paginacion, forma de la respuesta y si exige captcha o token.")
+    print("\nSiguientes pasos manuales (definen la arquitectura, ~25 min):")
+    print("  1. Abrir https://prod6.seace.gob.pe/buscador-publico con DevTools > Network,")
+    print("     hacer una busqueda y anotar: URL del servicio, metodo, filtros,")
+    print("     paginacion, forma de la respuesta y si exige captcha o token.")
+    print("  2. Abrir 4-5 fichas con buena pro reciente (LP, CP, AS, SIE) y anotar:")
+    print("     que documentos son descargables, si esta el cuadro comparativo con")
+    print("     montos por postor, si aparece la oferta del ganador, si el contrato")
+    print("     trae la oferta como anexo, y si cada descarga tiene URL directa con id.")
     return 0 if vivos else 1
 
 
